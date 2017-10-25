@@ -1,4 +1,4 @@
-package merorin.cloud.cloudnote.user;
+package merorin.cloud.cloudnote.po.data.user;
 
 import com.alibaba.fastjson.JSON;
 import org.springframework.data.annotation.Id;
