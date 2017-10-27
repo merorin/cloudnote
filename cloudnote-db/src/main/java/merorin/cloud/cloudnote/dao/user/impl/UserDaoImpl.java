@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -123,7 +123,7 @@ public class UserDaoImpl implements UserDao {
                 .map(value -> {
                     final UserDomainResult result = new UserDomainResult();
 
-                    final LocalTime now = LocalTime.now();
+                    final LocalDateTime now = LocalDateTime.now();
                     value.setCreateTime(now);
                     value.setLastUpdateTime(now);
 
@@ -183,12 +183,14 @@ public class UserDaoImpl implements UserDao {
                     final Update update = new Update();
                     update.currentDate("gmt_modified");
 
-                    Optional.ofNullable(value.getGender())
-                            .ifPresent((item) -> update.set("name", value.getName()));
-                    Optional.ofNullable(value.getGender())
-                            .ifPresent((item) -> update.set("mobile_phone", value.getMobilePhone()));
-                    Optional.ofNullable(value.getGender())
-                            .ifPresent((item) -> update.set("password", value.getPassword()));
+                    Optional.ofNullable(value.getName())
+                            .ifPresent((item) -> update.set("name", item));
+                    Optional.ofNullable(value.getAccount())
+                            .ifPresent((item) -> update.set("account", item));
+                    Optional.ofNullable(value.getMobilePhone())
+                            .ifPresent((item) -> update.set("mobile_phone", item));
+                    Optional.ofNullable(value.getPassword())
+                            .ifPresent((item) -> update.set("password", item));
                     Optional.ofNullable(value.getGender())
                             .ifPresent((item) -> update.set("gender", item));
                     Optional.ofNullable(value.getBirthday())
@@ -199,6 +201,8 @@ public class UserDaoImpl implements UserDao {
                             .ifPresent((item) -> update.set("last_login_ip", item));
                     Optional.ofNullable(value.getVerifyCode())
                             .ifPresent((item) -> update.set("verify_code", item));
+                    Optional.ofNullable(value.getAuthLevel())
+                            .ifPresent((item) -> update.set("auth_level", item));
 
                     final Query query = new Query(Criteria.where("_id").is(value.getId()));
                     try {
@@ -230,6 +234,8 @@ public class UserDaoImpl implements UserDao {
 
         Optional.ofNullable(req.getId())
                 .ifPresent((value) -> query.addCriteria(Criteria.where("_id").is(value)));
+        Optional.ofNullable(req.getAccount())
+                .ifPresent((value) -> query.addCriteria(Criteria.where("account").is(value)));
         Optional.ofNullable(req.getName())
                 .ifPresent((value) -> query.addCriteria(Criteria.where("name").is(value)));
         Optional.ofNullable(req.getMobilePhone())
@@ -244,6 +250,8 @@ public class UserDaoImpl implements UserDao {
                 .ifPresent((value) -> query.addCriteria(Criteria.where("gender").is(value)));
         Optional.ofNullable(req.getBirthday())
                 .ifPresent((value) -> query.addCriteria(Criteria.where("birthday").is(value)));
+        Optional.ofNullable(req.getAuthLevel())
+                .ifPresent((value) -> query.addCriteria(Criteria.where("auth_level").is(value)));
 
         return query;
     }

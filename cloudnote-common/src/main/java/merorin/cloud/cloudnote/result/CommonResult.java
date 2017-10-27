@@ -59,7 +59,7 @@ public class CommonResult<T> implements Serializable {
      * 构造器,默认构造一个错误的返回结果集合
      */
     public CommonResult() {
-        this(ResultConstant.Code.SUCCESS, ResultConstant.Message.ERROR);
+        this(ResultConstant.Code.ERROR, ResultConstant.Message.ERROR);
     }
 
     public CommonResult(int code, String message) {

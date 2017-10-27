@@ -6,6 +6,8 @@ import merorin.cloud.cloudnote.po.result.user.UserDomainResult;
 
 /**
  * Description: user对象的dao层操作接口
+ * Implements are show as below:
+ * @see merorin.cloud.cloudnote.dao.user.impl.UserDaoImpl
  *
  * @author guobin On date 2017/10/25.
  * @version 1.0

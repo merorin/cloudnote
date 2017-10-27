@@ -1,14 +1,16 @@
 package merorin.cloud.cloudnote.po.data.user;
 
 import com.alibaba.fastjson.JSON;
+import merorin.cloud.cloudnote.common.AuthLevelEnums;
+import merorin.cloud.cloudnote.common.GenderEnums;
+import merorin.cloud.cloudnote.po.data.BasePO;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.io.Serializable;
-import java.time.LocalTime;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * Description: 用户的持久化对象
@@ -18,7 +20,7 @@ import java.util.Date;
  * @since jdk 1.8
  */
 @Document(collection = "elan_user")
-public class UserPO implements Serializable {
+public class UserPO extends BasePO {
 
     private static final long serialVersionUID = 4100555050465495591L;
 
@@ -27,6 +29,12 @@ public class UserPO implements Serializable {
      */
     @Id
     private String id;
+
+    /**
+     * 账号
+     */
+    @Indexed
+    private String account;
 
     /**
      * 用户姓名
@@ -60,29 +68,24 @@ public class UserPO implements Serializable {
     /**
      * 性别
      */
-    private String gender;
+    private GenderEnums gender;
 
     /**
      * 生日
      */
-    private Date birthday;
+    private LocalDate birthday;
 
     /**
      * 验证码
      */
+    @Field("verify_code")
     private String verifyCode;
 
     /**
-     * 数据的创建时间,不能参与到业务层算法之中
+     * 权限等级
      */
-    @Field("gmt_create")
-    private LocalTime createTime;
-
-    /**
-     * 最后更新时间,不能参与到业务层算法之中
-     */
-    @Field("gmt_modified")
-    private LocalTime lastUpdateTime;
+    @Field("auth_level")
+    private AuthLevelEnums authLevel;
 
     public String getId() {
         return id;
@@ -90,6 +93,14 @@ public class UserPO implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getName() {
@@ -132,36 +143,20 @@ public class UserPO implements Serializable {
         this.lastLoginIp = lastLoginIp;
     }
 
-    public String getGender() {
+    public GenderEnums getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GenderEnums gender) {
         this.gender = gender;
     }
 
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
-    }
-
-    public LocalTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalTime getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(LocalTime lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
     }
 
     public String getVerifyCode() {
@@ -170,6 +165,14 @@ public class UserPO implements Serializable {
 
     public void setVerifyCode(String verifyCode) {
         this.verifyCode = verifyCode;
+    }
+
+    public AuthLevelEnums getAuthLevel() {
+        return authLevel;
+    }
+
+    public void setAuthLevel(AuthLevelEnums authLevel) {
+        this.authLevel = authLevel;
     }
 
     @Override
@@ -182,38 +185,25 @@ public class UserPO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof UserPO)) {
             return false;
         }
-
         UserPO userPO = (UserPO) o;
-
-        return (id != null ? id.equals(userPO.id) : userPO.id == null)
-                && (name != null ? name.equals(userPO.name) : userPO.name == null)
-                && (mobilePhone != null ? mobilePhone.equals(userPO.mobilePhone) : userPO.mobilePhone == null)
-                && (emailAddress != null ? emailAddress.equals(userPO.emailAddress) : userPO.emailAddress == null)
-                && (password != null ? password.equals(userPO.password) : userPO.password == null)
-                && (lastLoginIp != null ? lastLoginIp.equals(userPO.lastLoginIp) : userPO.lastLoginIp == null)
-                && (gender != null ? gender.equals(userPO.gender) : userPO.gender == null)
-                && (birthday != null ? birthday.equals(userPO.birthday) : userPO.birthday == null)
-                && (verifyCode != null ? verifyCode.equals(userPO.verifyCode) : userPO.verifyCode == null)
-                && (createTime != null ? createTime.equals(userPO.createTime) : userPO.createTime == null)
-                && (lastUpdateTime != null ? lastUpdateTime.equals(userPO.lastUpdateTime) : userPO.lastUpdateTime == null);
+        return Objects.equals(id, userPO.id) &&
+                Objects.equals(account, userPO.account) &&
+                Objects.equals(name, userPO.name) &&
+                Objects.equals(mobilePhone, userPO.mobilePhone) &&
+                Objects.equals(emailAddress, userPO.emailAddress) &&
+                Objects.equals(password, userPO.password) &&
+                Objects.equals(lastLoginIp, userPO.lastLoginIp) &&
+                gender == userPO.gender &&
+                Objects.equals(birthday, userPO.birthday) &&
+                Objects.equals(verifyCode, userPO.verifyCode) &&
+                authLevel == userPO.authLevel;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (mobilePhone != null ? mobilePhone.hashCode() : 0);
-        result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (lastLoginIp != null ? lastLoginIp.hashCode() : 0);
-        result = 31 * result + (gender != null ? gender.hashCode() : 0);
-        result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
-        result = 31 * result + (verifyCode != null ? verifyCode.hashCode() : 0);
-        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
-        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        return result;
+        return Objects.hash(id, account, name, mobilePhone, emailAddress, password, lastLoginIp, gender, birthday, verifyCode, authLevel);
     }
 }

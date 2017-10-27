@@ -18,6 +18,7 @@
 
     <modules>
         <module>../cloudnote-base</module>
+        <module>../cloudnote-common</module>
         <module>../cloudnote-backend-data</module>
         <module>../cloudnote-db</module>
         <module>../cloudnote-front-data</module>

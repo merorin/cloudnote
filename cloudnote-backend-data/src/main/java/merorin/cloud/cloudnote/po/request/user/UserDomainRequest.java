@@ -1,5 +1,7 @@
 package merorin.cloud.cloudnote.po.request.user;
 
+import merorin.cloud.cloudnote.common.AuthLevelEnums;
+import merorin.cloud.cloudnote.common.GenderEnums;
 import merorin.cloud.cloudnote.request.CommonRequest;
 
 import java.util.Date;
@@ -17,6 +19,11 @@ public class UserDomainRequest extends CommonRequest {
      * 唯一数据库id
      */
     private String id;
+
+    /**
+     * 账号
+     */
+    private String account;
 
     /**
      * 用户姓名
@@ -46,12 +53,17 @@ public class UserDomainRequest extends CommonRequest {
     /**
      * 性别
      */
-    private String gender;
+    private GenderEnums gender;
 
     /**
      * 生日
      */
     private Date birthday;
+
+    /**
+     * 权限等级
+     */
+    private AuthLevelEnums authLevel;
 
     public String getId() {
         return id;
@@ -59,6 +71,14 @@ public class UserDomainRequest extends CommonRequest {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getName() {
@@ -101,11 +121,11 @@ public class UserDomainRequest extends CommonRequest {
         this.lastLoginIp = lastLoginIp;
     }
 
-    public String getGender() {
+    public GenderEnums getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GenderEnums gender) {
         this.gender = gender;
     }
 
@@ -115,5 +135,13 @@ public class UserDomainRequest extends CommonRequest {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public AuthLevelEnums getAuthLevel() {
+        return authLevel;
+    }
+
+    public void setAuthLevel(AuthLevelEnums authLevel) {
+        this.authLevel = authLevel;
     }
 }
