@@ -14,4 +14,10 @@ public class UserDomainResult extends CommonResult<UserPO> {
 
     private static final long serialVersionUID = -7197832501610448110L;
 
+    public UserDomainResult() {
+    }
+
+    public UserDomainResult(int code, String message) {
+        super(code, message);
+    }
 }

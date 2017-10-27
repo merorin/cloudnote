@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Description: 用户的持久化对象
@@ -68,16 +68,21 @@ public class UserPO implements Serializable {
     private Date birthday;
 
     /**
+     * 验证码
+     */
+    private String verifyCode;
+
+    /**
      * 数据的创建时间,不能参与到业务层算法之中
      */
-    @Field("create_time")
-    private Date createTime;
+    @Field("gmt_create")
+    private LocalTime createTime;
 
     /**
      * 最后更新时间,不能参与到业务层算法之中
      */
-    @Field("last_update_time")
-    private Date lastUpdateTime;
+    @Field("gmt_modified")
+    private LocalTime lastUpdateTime;
 
     public String getId() {
         return id;
@@ -143,20 +148,28 @@ public class UserPO implements Serializable {
         this.birthday = birthday;
     }
 
-    public Date getCreateTime() {
+    public LocalTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalTime createTime) {
         this.createTime = createTime;
     }
 
-    public Date getLastUpdateTime() {
+    public LocalTime getLastUpdateTime() {
         return lastUpdateTime;
     }
 
-    public void setLastUpdateTime(Date lastUpdateTime) {
+    public void setLastUpdateTime(LocalTime lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     @Override
@@ -172,17 +185,20 @@ public class UserPO implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         UserPO userPO = (UserPO) o;
-        return Objects.equals(id, userPO.id) &&
-                Objects.equals(name, userPO.name) &&
-                Objects.equals(mobilePhone, userPO.mobilePhone) &&
-                Objects.equals(emailAddress, userPO.emailAddress) &&
-                Objects.equals(password, userPO.password) &&
-                Objects.equals(lastLoginIp, userPO.lastLoginIp) &&
-                Objects.equals(gender, userPO.gender) &&
-                Objects.equals(birthday, userPO.birthday) &&
-                Objects.equals(createTime, userPO.createTime) &&
-                Objects.equals(lastUpdateTime, userPO.lastUpdateTime);
+
+        return (id != null ? id.equals(userPO.id) : userPO.id == null)
+                && (name != null ? name.equals(userPO.name) : userPO.name == null)
+                && (mobilePhone != null ? mobilePhone.equals(userPO.mobilePhone) : userPO.mobilePhone == null)
+                && (emailAddress != null ? emailAddress.equals(userPO.emailAddress) : userPO.emailAddress == null)
+                && (password != null ? password.equals(userPO.password) : userPO.password == null)
+                && (lastLoginIp != null ? lastLoginIp.equals(userPO.lastLoginIp) : userPO.lastLoginIp == null)
+                && (gender != null ? gender.equals(userPO.gender) : userPO.gender == null)
+                && (birthday != null ? birthday.equals(userPO.birthday) : userPO.birthday == null)
+                && (verifyCode != null ? verifyCode.equals(userPO.verifyCode) : userPO.verifyCode == null)
+                && (createTime != null ? createTime.equals(userPO.createTime) : userPO.createTime == null)
+                && (lastUpdateTime != null ? lastUpdateTime.equals(userPO.lastUpdateTime) : userPO.lastUpdateTime == null);
     }
 
     @Override
@@ -195,6 +211,7 @@ public class UserPO implements Serializable {
         result = 31 * result + (lastLoginIp != null ? lastLoginIp.hashCode() : 0);
         result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
+        result = 31 * result + (verifyCode != null ? verifyCode.hashCode() : 0);
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         return result;

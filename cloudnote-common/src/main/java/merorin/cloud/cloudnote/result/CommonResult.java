@@ -2,6 +2,7 @@ package merorin.cloud.cloudnote.result;
 
 import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.common.ResultConstant;
+import merorin.cloud.cloudnote.request.CommonRequest;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,8 +60,12 @@ public class CommonResult<T> implements Serializable {
      * 构造器,默认构造一个错误的返回结果集合
      */
     public CommonResult() {
-        this.message = ResultConstant.Message.ERROR;
-        this.code = ResultConstant.Code.ERROR;
+        this(ResultConstant.Code.SUCCESS, ResultConstant.Message.ERROR);
+    }
+
+    public CommonResult(int code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
     public int getCode() {
@@ -116,6 +121,7 @@ public class CommonResult<T> implements Serializable {
     }
 
     public void setValues(List<T> values) {
+
         if (values != null) {
             if (!this.values.isEmpty()) {
                 this.values.clear();
