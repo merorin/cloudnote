@@ -2,7 +2,6 @@ package merorin.cloud.cloudnote.result;
 
 import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.common.ResultConstant;
-import merorin.cloud.cloudnote.request.CommonRequest;
 
 import java.io.Serializable;
 import java.util.ArrayList;
