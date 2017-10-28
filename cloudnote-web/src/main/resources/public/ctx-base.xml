@@ -8,19 +8,17 @@
     <description>spring公共配置文件</description>
 
     <context:component-scan base-package="merorin.cloud">
-
+        <context:include-filter type="regex" expression="merorin\.cloud\.cloudnote\.dao\..*DaoImpl"/>
     </context:component-scan>
 
-    <bean id="dozerMapper" class="org.dozer.DozerBeanMapper">
-        <property name="mappingFiles">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
             <list>
-                <value>dozer/mapping-bo-po.xml</value>
-                <value>dozer/mapping-bo-vo.xml</value>
+                <value>classpath:log4j.properties</value>
+                <value>classpath:mongodb.properties</value>
             </list>
         </property>
     </bean>
-
-    <!--暂时关闭-->
-    <!--<import resource="ctx-mongodb.xml"/>-->
-    <!--<import resource="ctx-redis.xml"/>-->
 </beans>
