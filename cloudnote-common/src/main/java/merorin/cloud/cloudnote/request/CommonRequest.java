@@ -8,7 +8,7 @@ package merorin.cloud.cloudnote.request;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonRequest {
+public class CommonRequest<T> {
 
     /**
      * 表示需要进行查询的页码
@@ -25,6 +25,11 @@ public class CommonRequest {
      * true为需要,false为不需要,默认为true
      */
     private boolean needPaging = true;
+
+    /**
+     * 请求中的参数封装
+     */
+    private T value;
 
     public int getPage() {
         return page;
@@ -48,5 +53,13 @@ public class CommonRequest {
 
     public void setNeedPaging(boolean needPaging) {
         this.needPaging = needPaging;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
     }
 }

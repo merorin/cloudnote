@@ -3,8 +3,8 @@ package merorin.cloud.cloudnote.dao.user.impl;
 import merorin.cloud.cloudnote.common.ResultConstant;
 import merorin.cloud.cloudnote.dao.user.UserDao;
 import merorin.cloud.cloudnote.po.data.user.UserPO;
-import merorin.cloud.cloudnote.po.request.user.UserDomainRequest;
-import merorin.cloud.cloudnote.po.result.user.UserDomainResult;
+import merorin.cloud.cloudnote.request.CommonRequest;
+import merorin.cloud.cloudnote.result.CommonResult;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -30,10 +30,10 @@ public class UserDaoImpl implements UserDao {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public UserDomainResult getById(String id) {
+    public CommonResult<UserPO> getById(String id) {
 
         return Optional.ofNullable(id).map((idVal) -> {
-            final UserDomainResult result = new UserDomainResult();
+            final CommonResult<UserPO> result = new CommonResult<>();
             try {
                 final UserPO user = this.mongoTemplate.findById(idVal, UserPO.class);
 
@@ -52,14 +52,14 @@ public class UserDaoImpl implements UserDao {
             }
 
             return result;
-        }).orElse(new UserDomainResult(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+        }).orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public UserDomainResult listByRequest(UserDomainRequest request) {
+    public CommonResult<UserPO> listByRequest(CommonRequest<UserPO> request) {
 
         return Optional.ofNullable(request).map((req) -> {
-            final UserDomainResult result = new UserDomainResult();
+            final CommonResult<UserPO> result = new CommonResult<>();
 
             //设置查询条件
             final Query query = this.buildCommonQuery(req);
@@ -88,13 +88,13 @@ public class UserDaoImpl implements UserDao {
             }
 
             return result;
-        }).orElse(new UserDomainResult(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+        }).orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public UserDomainResult countByRequest(UserDomainRequest request) {
+    public CommonResult<UserPO> countByRequest(CommonRequest<UserPO> request) {
         return Optional.ofNullable(request).map((req) -> {
-            final UserDomainResult result = new UserDomainResult();
+            final CommonResult<UserPO> result = new CommonResult<>();
 
             //设置查询条件
             final Query query = this.buildCommonQuery(req);
@@ -112,16 +112,16 @@ public class UserDaoImpl implements UserDao {
             }
 
             return result;
-        }).orElse(new UserDomainResult(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+        }).orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public UserDomainResult saveUser(UserPO user) {
+    public CommonResult<UserPO> saveUser(UserPO user) {
 
         return Optional.ofNullable(user)
                 .filter(param -> param.getName() != null && param.getMobilePhone() != null && param.getPassword() != null)
                 .map(value -> {
-                    final UserDomainResult result = new UserDomainResult();
+                    final CommonResult<UserPO> result = new CommonResult<>();
 
                     final LocalDateTime now = LocalDateTime.now();
                     value.setCreateTime(now);
@@ -140,15 +140,15 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new UserDomainResult(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public UserDomainResult removeByRequest(UserDomainRequest request) {
+    public CommonResult<UserPO> removeByRequest(CommonRequest<UserPO> request) {
 
         return Optional.ofNullable(request)
                 .map(req -> {
-                    final UserDomainResult result = new UserDomainResult();
+                    final CommonResult<UserPO> result = new CommonResult<>();
 
                     final Query query = this.buildCommonQuery(req);
 
@@ -169,16 +169,16 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new UserDomainResult(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public UserDomainResult updateById(UserPO user) {
+    public CommonResult<UserPO> updateById(UserPO user) {
 
         return Optional.ofNullable(user)
                 .filter(param -> param.getId() != null)
                 .map(value -> {
-                    final UserDomainResult result = new UserDomainResult();
+                    final CommonResult<UserPO> result = new CommonResult<>();
 
                     final Update update = new Update();
                     update.currentDate("gmt_modified");
@@ -221,37 +221,39 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new UserDomainResult(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     /**
      * 构造一个user的通用query类
-     * @param req 传入的请求
+     * @param request 传入的请求
      * @return 构造出来的query类
      */
-    private Query buildCommonQuery(UserDomainRequest req){
+    private Query buildCommonQuery(CommonRequest<UserPO> request){
         final Query query = new Query();
-
-        Optional.ofNullable(req.getId())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("_id").is(value)));
-        Optional.ofNullable(req.getAccount())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("account").is(value)));
-        Optional.ofNullable(req.getName())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("name").is(value)));
-        Optional.ofNullable(req.getMobilePhone())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("mobile_phone").is(value)));
-        Optional.ofNullable(req.getEmailAddress())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("email_address").is(value)));
-        Optional.ofNullable(req.getPassword())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("password").is(value)));
-        Optional.ofNullable(req.getLastLoginIp())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("last_login_ip").is(value)));
-        Optional.ofNullable(req.getGender())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("gender").is(value)));
-        Optional.ofNullable(req.getBirthday())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("birthday").is(value)));
-        Optional.ofNullable(req.getAuthLevel())
-                .ifPresent((value) -> query.addCriteria(Criteria.where("auth_level").is(value)));
+        
+        Optional.ofNullable(request.getValue()).ifPresent(req -> {
+            Optional.ofNullable(req.getId())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("_id").is(value)));
+            Optional.ofNullable(req.getAccount())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("account").is(value)));
+            Optional.ofNullable(req.getName())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("name").is(value)));
+            Optional.ofNullable(req.getMobilePhone())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("mobile_phone").is(value)));
+            Optional.ofNullable(req.getEmailAddress())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("email_address").is(value)));
+            Optional.ofNullable(req.getPassword())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("password").is(value)));
+            Optional.ofNullable(req.getLastLoginIp())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("last_login_ip").is(value)));
+            Optional.ofNullable(req.getGender())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("gender").is(value)));
+            Optional.ofNullable(req.getBirthday())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("birthday").is(value)));
+            Optional.ofNullable(req.getAuthLevel())
+                    .ifPresent((value) -> query.addCriteria(Criteria.where("auth_level").is(value)));
+        });
 
         return query;
     }
