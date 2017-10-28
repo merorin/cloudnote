@@ -1,7 +1,8 @@
-package merorin.cloud.cloudnote.result;
+package merorin.cloud.cloudnote.po.result;
 
 import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.common.ResultConstant;
+import merorin.cloud.cloudnote.po.data.BasePO;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,14 +10,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Description: 通用的返回结果集合
+ * Description: 通用dao层的返回结果集合
  *
  * @author guobin On date 2017/10/25.
  * @param <T> 包含实际类型
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonResult<T> implements Serializable {
+public class CommonDomainResult<T extends BasePO> implements Serializable {
 
     private static final long serialVersionUID = 1452706754677411742L;
 
@@ -58,11 +59,11 @@ public class CommonResult<T> implements Serializable {
     /**
      * 构造器,默认构造一个错误的返回结果集合
      */
-    public CommonResult() {
+    public CommonDomainResult() {
         this(ResultConstant.Code.ERROR, ResultConstant.Message.ERROR);
     }
 
-    public CommonResult(int code, String message) {
+    public CommonDomainResult(int code, String message) {
         this.code = code;
         this.message = message;
     }

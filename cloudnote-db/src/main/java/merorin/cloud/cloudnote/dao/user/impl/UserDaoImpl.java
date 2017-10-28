@@ -3,8 +3,8 @@ package merorin.cloud.cloudnote.dao.user.impl;
 import merorin.cloud.cloudnote.common.ResultConstant;
 import merorin.cloud.cloudnote.dao.user.UserDao;
 import merorin.cloud.cloudnote.po.data.user.UserPO;
-import merorin.cloud.cloudnote.request.CommonRequest;
-import merorin.cloud.cloudnote.result.CommonResult;
+import merorin.cloud.cloudnote.po.request.CommonDomainRequest;
+import merorin.cloud.cloudnote.po.result.CommonDomainResult;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -30,10 +30,10 @@ public class UserDaoImpl implements UserDao {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public CommonResult<UserPO> getById(String id) {
+    public CommonDomainResult<UserPO> getById(String id) {
 
         return Optional.ofNullable(id).map((idVal) -> {
-            final CommonResult<UserPO> result = new CommonResult<>();
+            final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
             try {
                 final UserPO user = this.mongoTemplate.findById(idVal, UserPO.class);
 
@@ -52,14 +52,14 @@ public class UserDaoImpl implements UserDao {
             }
 
             return result;
-        }).orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+        }).orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public CommonResult<UserPO> listByRequest(CommonRequest<UserPO> request) {
+    public CommonDomainResult<UserPO> listByRequest(CommonDomainRequest<UserPO> request) {
 
         return Optional.ofNullable(request).map((req) -> {
-            final CommonResult<UserPO> result = new CommonResult<>();
+            final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
 
             //设置查询条件
             final Query query = this.buildCommonQuery(req);
@@ -88,13 +88,13 @@ public class UserDaoImpl implements UserDao {
             }
 
             return result;
-        }).orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+        }).orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public CommonResult<UserPO> countByRequest(CommonRequest<UserPO> request) {
+    public CommonDomainResult<UserPO> countByRequest(CommonDomainRequest<UserPO> request) {
         return Optional.ofNullable(request).map((req) -> {
-            final CommonResult<UserPO> result = new CommonResult<>();
+            final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
 
             //设置查询条件
             final Query query = this.buildCommonQuery(req);
@@ -112,16 +112,16 @@ public class UserDaoImpl implements UserDao {
             }
 
             return result;
-        }).orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+        }).orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public CommonResult<UserPO> saveUser(UserPO user) {
+    public CommonDomainResult<UserPO> saveUser(UserPO user) {
 
         return Optional.ofNullable(user)
                 .filter(param -> param.getName() != null && param.getMobilePhone() != null && param.getPassword() != null)
                 .map(value -> {
-                    final CommonResult<UserPO> result = new CommonResult<>();
+                    final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
 
                     final LocalDateTime now = LocalDateTime.now();
                     value.setCreateTime(now);
@@ -140,15 +140,15 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public CommonResult<UserPO> removeByRequest(CommonRequest<UserPO> request) {
+    public CommonDomainResult<UserPO> removeByRequest(CommonDomainRequest<UserPO> request) {
 
         return Optional.ofNullable(request)
                 .map(req -> {
-                    final CommonResult<UserPO> result = new CommonResult<>();
+                    final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
 
                     final Query query = this.buildCommonQuery(req);
 
@@ -169,16 +169,16 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     @Override
-    public CommonResult<UserPO> updateById(UserPO user) {
+    public CommonDomainResult<UserPO> updateById(UserPO user) {
 
         return Optional.ofNullable(user)
                 .filter(param -> param.getId() != null)
                 .map(value -> {
-                    final CommonResult<UserPO> result = new CommonResult<>();
+                    final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
 
                     final Update update = new Update();
                     update.currentDate("gmt_modified");
@@ -221,7 +221,7 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new CommonResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
     }
 
     /**
@@ -229,7 +229,7 @@ public class UserDaoImpl implements UserDao {
      * @param request 传入的请求
      * @return 构造出来的query类
      */
-    private Query buildCommonQuery(CommonRequest<UserPO> request){
+    private Query buildCommonQuery(CommonDomainRequest<UserPO> request){
         final Query query = new Query();
         
         Optional.ofNullable(request.getValue()).ifPresent(req -> {
