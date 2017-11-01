@@ -1,8 +1,8 @@
 package merorin.cloud.cloudnote.po.data.user;
 
 import com.alibaba.fastjson.JSON;
-import merorin.cloud.cloudnote.common.AuthLevelEnums;
-import merorin.cloud.cloudnote.common.GenderEnums;
+import merorin.cloud.cloudnote.common.AuthLevelEnum;
+import merorin.cloud.cloudnote.common.GenderEnum;
 import merorin.cloud.cloudnote.po.data.BasePO;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -68,7 +68,7 @@ public class UserPO extends BasePO {
     /**
      * 性别
      */
-    private GenderEnums gender;
+    private GenderEnum gender;
 
     /**
      * 生日
@@ -85,7 +85,7 @@ public class UserPO extends BasePO {
      * 权限等级
      */
     @Field("auth_level")
-    private AuthLevelEnums authLevel;
+    private AuthLevelEnum authLevel;
 
     public String getId() {
         return id;
@@ -143,11 +143,11 @@ public class UserPO extends BasePO {
         this.lastLoginIp = lastLoginIp;
     }
 
-    public GenderEnums getGender() {
+    public GenderEnum getGender() {
         return gender;
     }
 
-    public void setGender(GenderEnums gender) {
+    public void setGender(GenderEnum gender) {
         this.gender = gender;
     }
 
@@ -167,11 +167,11 @@ public class UserPO extends BasePO {
         this.verifyCode = verifyCode;
     }
 
-    public AuthLevelEnums getAuthLevel() {
+    public AuthLevelEnum getAuthLevel() {
         return authLevel;
     }
 
-    public void setAuthLevel(AuthLevelEnums authLevel) {
+    public void setAuthLevel(AuthLevelEnum authLevel) {
         this.authLevel = authLevel;
     }
 

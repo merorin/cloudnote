@@ -7,7 +7,7 @@ package merorin.cloud.cloudnote.common;
  * @version 1.0
  * @since jdk 1.8
  */
-public enum  GenderEnums {
+public enum GenderEnum {
     /**
      * 男
      */

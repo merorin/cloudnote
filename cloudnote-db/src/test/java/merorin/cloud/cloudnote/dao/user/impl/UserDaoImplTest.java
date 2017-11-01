@@ -1,10 +1,11 @@
 package merorin.cloud.cloudnote.dao.user.impl;
 
 import merorin.cloud.cloudnote.base.BaseTest;
-import merorin.cloud.cloudnote.common.AuthLevelEnums;
-import merorin.cloud.cloudnote.common.GenderEnums;
+import merorin.cloud.cloudnote.common.AuthLevelEnum;
+import merorin.cloud.cloudnote.common.GenderEnum;
 import merorin.cloud.cloudnote.common.ResultConstant;
 import merorin.cloud.cloudnote.dao.user.UserDao;
+import merorin.cloud.cloudnote.fcq.io.param.FcqFunctionParam;
 import merorin.cloud.cloudnote.po.data.user.UserPO;
 import merorin.cloud.cloudnote.po.request.CommonDomainRequest;
 import merorin.cloud.cloudnote.po.result.CommonDomainResult;
@@ -66,12 +67,12 @@ public class UserDaoImplTest extends BaseTest {
         CommonDomainRequest<UserPO> request = new CommonDomainRequest<>();
         request.setNeedPaging(false);
         UserPO userParam = new UserPO();
-        userParam.setGender(GenderEnums.FEMALE);
+        userParam.setGender(GenderEnum.FEMALE);
         request.setValue(userParam);
         CommonDomainResult<UserPO> result = this.userDao.listByRequest(request);
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         List<UserPO> expectedList = this.dataList.stream()
-                .filter(user -> GenderEnums.FEMALE.equals(user.getGender()))
+                .filter(user -> GenderEnum.FEMALE.equals(user.getGender()))
                 .collect(Collectors.toList());
         assertEquals(expectedList, result.getValues());
     }
@@ -81,13 +82,13 @@ public class UserDaoImplTest extends BaseTest {
         CommonDomainRequest<UserPO> request = new CommonDomainRequest<>();
         request.setNeedPaging(false);
         UserPO userParam = new UserPO();
-        userParam.setGender(GenderEnums.FEMALE);
-        userParam.setAuthLevel(AuthLevelEnums.ADMIN);
+        userParam.setGender(GenderEnum.FEMALE);
+        userParam.setAuthLevel(AuthLevelEnum.ADMIN);
         request.setValue(userParam);
         CommonDomainResult<UserPO> result = this.userDao.countByRequest(request);
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         long expectedCount = this.dataList.stream()
-                .filter(user -> GenderEnums.FEMALE.equals(user.getGender()) && AuthLevelEnums.ADMIN.equals(user.getAuthLevel()))
+                .filter(user -> GenderEnum.FEMALE.equals(user.getGender()) && AuthLevelEnum.ADMIN.equals(user.getAuthLevel()))
                 .count();
         assertEquals(expectedCount, result.getTotalCount());
     }
@@ -107,14 +108,14 @@ public class UserDaoImplTest extends BaseTest {
         CommonDomainRequest<UserPO> request = new CommonDomainRequest<>();
         request.setNeedPaging(false);
         UserPO userParam = new UserPO();
-        userParam.setGender(GenderEnums.FEMALE);
-        userParam.setAuthLevel(AuthLevelEnums.ADMIN);
+        userParam.setGender(GenderEnum.FEMALE);
+        userParam.setAuthLevel(AuthLevelEnum.ADMIN);
         request.setValue(userParam);
         //进行删除
         CommonDomainResult<UserPO> delResult = this.userDao.removeByRequest(request);
         assertEquals(ResultConstant.Code.SUCCESS, delResult.getCode());
         List<UserPO> expectedList = this.dataList.stream()
-                .filter(user -> !GenderEnums.FEMALE.equals(user.getGender()) || !AuthLevelEnums.ADMIN.equals(user.getAuthLevel()))
+                .filter(user -> !GenderEnum.FEMALE.equals(user.getGender()) || !AuthLevelEnum.ADMIN.equals(user.getAuthLevel()))
                 .collect(Collectors.toList());
         //查询删除之后数据库中所剩的数据
         CommonDomainRequest<UserPO> listRequest = new CommonDomainRequest<>();
@@ -154,8 +155,8 @@ public class UserDaoImplTest extends BaseTest {
         user.setEmailAddress("wizard@qq.com");
         user.setLastLoginIp("192.168.1.2");
         user.setVerifyCode("1001");
-        user.setGender(GenderEnums.FEMALE);
-        user.setAuthLevel(AuthLevelEnums.ROOT);
+        user.setGender(GenderEnum.FEMALE);
+        user.setAuthLevel(AuthLevelEnum.ROOT);
 
         return user;
     }

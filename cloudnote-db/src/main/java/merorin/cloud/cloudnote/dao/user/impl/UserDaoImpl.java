@@ -257,4 +257,9 @@ public class UserDaoImpl implements UserDao {
 
         return query;
     }
+
+    @Override
+    public CommonDomainResult<UserPO> clearAll() {
+        return null;
+    }
 }

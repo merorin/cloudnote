@@ -7,7 +7,7 @@ package merorin.cloud.cloudnote.common;
  * @version 1.0
  * @since jdk 1.8
  */
-public enum AuthLevelEnums {
+public enum AuthLevelEnum {
 
     /**
      * 游客
@@ -36,7 +36,7 @@ public enum AuthLevelEnums {
 
     private final int value;
 
-    AuthLevelEnums(final int value) {
+    AuthLevelEnum(final int value) {
         this.value = value;
     }
 
@@ -44,7 +44,7 @@ public enum AuthLevelEnums {
         return this.value;
     }
 
-    public static AuthLevelEnums valueOf(final int value){
+    public static AuthLevelEnum valueOf(final int value){
         switch (value) {
             case 1:
                 return ORDINARY;

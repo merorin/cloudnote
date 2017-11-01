@@ -14,12 +14,17 @@ import java.util.Set;
 public class RedisCacheResult<T> {
 
     /**
-     * 得到的值
+     * 得到的值,以object形式返回
+     */
+    private T value;
+
+    /**
+     * 得到的值,以list形式返回
      */
     private List<T> valueList;
 
     /**
-     * 得到的值
+     * 得到的值以set形式返回
      */
     private Set<T> valueSet;
 
@@ -32,6 +37,14 @@ public class RedisCacheResult<T> {
      * 返回的map集合
      */
     private Map<String, T> valueMap;
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
 
     public List<T> getValueList() {
         return valueList;

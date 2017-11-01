@@ -56,4 +56,6 @@ public interface UserDao {
      * @return 处理结果
      */
     CommonDomainResult<UserPO> updateById(UserPO user);
+
+    CommonDomainResult<UserPO> clearAll();
 }
