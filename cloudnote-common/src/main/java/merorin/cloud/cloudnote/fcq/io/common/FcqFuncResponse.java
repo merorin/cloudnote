@@ -2,6 +2,8 @@ package merorin.cloud.cloudnote.fcq.io.common;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Optional;
+
 /**
  * Description: fcq函数方法处理返回结果
  *
@@ -22,13 +24,24 @@ public class FcqFuncResponse {
     private final String execRes;
 
     /**
-     * 错误信息常量
+     * 信息常量
      */
-    public static class ErrorMsg {
+    public static class Msg {
 
+        /**
+         * 返回的值是null
+         */
         public static final String EMPTY_MESSAGE = "Empty response";
 
+        /**
+         * 参数非法
+         */
         public static final String INVALID_PARAM = "Invalid function";
+
+        /**
+         * 改方法是void方法,不返回值
+         */
+        public static final String VOID_RESPONSE = "Void return";
 
     }
 
@@ -83,6 +96,8 @@ public class FcqFuncResponse {
      * @return JSON解析之后的对象
      */
     public <T> T getResponseObj(Class<T> clazz) {
-        return JSON.parseObject(this.execRes, clazz);
+        return Optional.ofNullable(this.execRes)
+                .map(resStr -> JSON.parseObject(resStr, clazz))
+                .orElse(null);
     }
 }

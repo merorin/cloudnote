@@ -59,20 +59,38 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
 
     /**
      * 调用传入的function
-     * 如果{@code param.getData()}为空,那么调用{@code supplier},否则调用{@code mapper}
      * @param param 传入的参数,不能为空
      * @param <T> 核心数据类型
      * @param <R> 调用函数后返回的结果
      * @return 返回的是一个{@code R}的JSON字符串以及函数处理返回码.
-     *          当param参数有问题时,将返回{@code FcqFuncResponse.ErrorMsg.INVALID_PARAM}
-     *          当调用函数返回的结果为空时,将返回{@code FcqFuncResponse.ErrorMsg.EMPTY_MESSAGE}
+     *          当param参数有问题时,将返回{@code FcqFuncResponse.Msg.INVALID_PARAM}
+     *          当调用函数返回的结果为空时,将返回{@code FcqFuncResponse.Msg.EMPTY_MESSAGE}
      * @throws NullPointerException 如果param为null
      */
-    protected <T, R> FcqFuncResponse execFunction(FcqFunctionParam<T, R> param) {
+    protected <T, R> FcqFuncResponse execFunction(final FcqFunctionParam<T, R> param) {
 
-        return Optional.of(param).filter(value -> value.getData() != null)
-                .map(this::execMapper)
-                .orElseGet(() -> this.execSupplier(param));
+        return Optional.of(param).map(FcqFunctionParam::getFuncType)
+                .map(funcType -> {
+                    final FcqFuncResponse fcqFuncResponse;
+                    switch (funcType) {
+                        case FUNCTION:
+                            fcqFuncResponse = this.execMapper(param);
+                            break;
+                        case CONSUMER:
+                            fcqFuncResponse = this.execConsumer(param);
+                            break;
+                        case SUPPLIER:
+                            fcqFuncResponse = this.execSupplier(param);
+                            break;
+                        case PERFORMER:
+                            fcqFuncResponse = this.execPerformer(param);
+                            break;
+                        default:
+                            fcqFuncResponse = FcqFuncResponse.error(FcqFuncResponse.Msg.INVALID_PARAM);
+                            break;
+                    }
+                    return fcqFuncResponse;
+                }).orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.INVALID_PARAM));
     }
 
     /**
@@ -85,10 +103,10 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
     private <T, R> FcqFuncResponse execMapper(FcqFunctionParam<T, R> param) {
         return Optional.ofNullable(param.getMapper())
                 .map(
-                        (mapper) -> Optional.ofNullable(mapper.apply(param.getData()))
+                        mapper -> Optional.ofNullable(mapper.apply(param.getData()))
                                 .map(FcqFuncResponse::success)
-                                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.ErrorMsg.EMPTY_MESSAGE)))
-                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.ErrorMsg.INVALID_PARAM));
+                                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.EMPTY_MESSAGE)))
+                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.INVALID_PARAM));
     }
 
     /**
@@ -101,10 +119,45 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
     private <T, R> FcqFuncResponse execSupplier(FcqFunctionParam<T, R> param) {
         return Optional.ofNullable(param.getSupplier())
                 .map(
-                        (supplier) -> Optional.ofNullable(supplier.get())
+                        supplier -> Optional.ofNullable(supplier.get())
                                 .map(FcqFuncResponse::success)
-                                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.ErrorMsg.EMPTY_MESSAGE)))
-                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.ErrorMsg.INVALID_PARAM));
+                                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.EMPTY_MESSAGE)))
+                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.INVALID_PARAM));
+    }
+
+    /**
+     * 执行consumer
+     * @param param 参数
+     * @param <T> 传入的数据类型
+     * @param <R> 返回的结果类型
+     * @return 返回的结果
+     */
+    private <T, R> FcqFuncResponse execConsumer(FcqFunctionParam<T, R> param) {
+        return Optional.ofNullable(param.getConsumer())
+                .map(
+                        consumer -> {
+                            consumer.accept(param.getData());
+                            return FcqFuncResponse.success(FcqFuncResponse.Msg.VOID_RESPONSE);
+                        })
+                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.INVALID_PARAM));
+    }
+
+    /**
+     * 执行consumer
+     * @param param 参数
+     * @param <T> 传入的数据类型
+     * @param <R> 返回的结果类型
+     * @return 返回的结果
+     */
+    private <T, R> FcqFuncResponse execPerformer(FcqFunctionParam<T, R> param) {
+        return Optional.ofNullable(param.getPerformer())
+                .map(
+                        performer -> {
+                            performer.execute();
+                            return FcqFuncResponse.success(FcqFuncResponse.Msg.VOID_RESPONSE);
+                        })
+                .orElseGet(() -> FcqFuncResponse.error(FcqFuncResponse.Msg.INVALID_PARAM));
+
     }
 
     public boolean isNeedThread() {
