@@ -6,6 +6,7 @@ import merorin.cloud.cloudnote.fcq.util.FcqConfigContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
@@ -41,6 +42,7 @@ public class FcqMainTemplate {
     /**
      * 执行初始化方法
      */
+    @PostConstruct
     public void init() {
         LOG.info("Begin to initialize fcq......");
         this.executorContainer.run();
