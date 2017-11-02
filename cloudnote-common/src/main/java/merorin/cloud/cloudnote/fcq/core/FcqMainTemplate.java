@@ -43,7 +43,7 @@ public class FcqMainTemplate {
      */
     public void init() {
         LOG.info("Begin to initialize fcq......");
-        this.executorContainer.execute();
+        this.executorContainer.run();
         this.hasInit = true;
         LOG.info("Finish to initialize fcq......");
     }
@@ -56,7 +56,20 @@ public class FcqMainTemplate {
         if (this.hasInit) {
             return this.processorContainer;
         } else {
-            LOG.error("FcqMainTemplate has not been initialized yet.");
+            LOG.error("FcqMainTemplate has not been initialized yet.Fail to get the processor container.");
+            return null;
+        }
+    }
+
+    /**
+     * 获取数据执行者
+     * @return 获取到的数据执行者
+     */
+    public FcqDataExecutorContainer getDataExecutor() {
+        if (this.hasInit) {
+            return this.executorContainer;
+        } else {
+            LOG.error("FcqMainTemplate has not been initialized yet.Fail to get the executor container.");
             return null;
         }
     }

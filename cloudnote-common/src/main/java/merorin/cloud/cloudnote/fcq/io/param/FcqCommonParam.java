@@ -43,6 +43,11 @@ public class FcqCommonParam<T> {
      */
     private T data;
 
+    /**
+     * token,在fcq内部生成并用来校验
+     */
+    private byte[] token;
+
     public String getFcqTypeName() {
         return fcqTypeName;
     }
@@ -89,5 +94,13 @@ public class FcqCommonParam<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public byte[] getToken() {
+        return token;
+    }
+
+    public void setToken(byte[] token) {
+        this.token = token;
     }
 }

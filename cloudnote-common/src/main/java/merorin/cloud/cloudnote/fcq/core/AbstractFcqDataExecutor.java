@@ -1,5 +1,6 @@
 package merorin.cloud.cloudnote.fcq.core;
 
+import merorin.cloud.cloudnote.fcq.core.impl.FcqQueueProcessorContainer;
 import merorin.cloud.cloudnote.fcq.io.common.FcqFuncResponse;
 import merorin.cloud.cloudnote.fcq.io.param.FcqFunctionParam;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
@@ -18,7 +19,7 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
     /**
      * fcq队列的处理者
      */
-    protected FcqQueueProcessable fcqQueueProcessor;
+    protected FcqQueueProcessorContainer processorContainer;
 
     /**
      * 队列名字
@@ -54,7 +55,7 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
      * 所有需要启动守护线程的执行者都必须实现这个方法
      */
     @Override
-    public abstract void execute();
+    public abstract void run();
 
     /**
      * 调用传入的function
@@ -118,7 +119,7 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
         return fcqQueueType;
     }
 
-    public void setFcqQueueProcessor(FcqQueueProcessable fcqQueueProcessor) {
-        this.fcqQueueProcessor = fcqQueueProcessor;
+    public void setProcessorContainer(FcqQueueProcessorContainer processorContainer) {
+        this.processorContainer = processorContainer;
     }
 }

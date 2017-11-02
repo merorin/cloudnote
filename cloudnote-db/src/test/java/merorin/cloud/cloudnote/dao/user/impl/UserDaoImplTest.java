@@ -5,7 +5,6 @@ import merorin.cloud.cloudnote.common.AuthLevelEnum;
 import merorin.cloud.cloudnote.common.GenderEnum;
 import merorin.cloud.cloudnote.common.ResultConstant;
 import merorin.cloud.cloudnote.dao.user.UserDao;
-import merorin.cloud.cloudnote.fcq.io.param.FcqFunctionParam;
 import merorin.cloud.cloudnote.po.data.user.UserPO;
 import merorin.cloud.cloudnote.po.request.CommonDomainRequest;
 import merorin.cloud.cloudnote.po.result.CommonDomainResult;

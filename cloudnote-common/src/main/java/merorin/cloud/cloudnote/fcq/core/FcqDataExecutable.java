@@ -19,7 +19,8 @@ public interface FcqDataExecutable {
     <T> FcqProcessResult<T> read();
 
     /**
-     * 此方法被调用时会启动一条守护线程来执行其实现类中{@code runnableCall方法}
+     * 此方法被调用时会启动一条{@code Runnable}守护线程
+     * 线程执行的方法即为该方法中的表达式
      */
-    void execute();
+    void run();
 }

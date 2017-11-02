@@ -12,13 +12,27 @@ import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
  */
 public class ErrorFcqDataExecutor extends AbstractFcqDataExecutor {
 
+    /**
+     * 错误执行者对应的队列名
+     */
+    private static final String ERROR_QUEUE_NAME = "errorDataExecutor";
+
+    /**
+     * 错误的队列类型
+     */
+    private static final String ERROR_QUEUE_TYPE = "errorFcqType";
+
+    public ErrorFcqDataExecutor() {
+        super(ERROR_QUEUE_NAME, ERROR_QUEUE_TYPE, false);
+    }
+
     @Override
     public <T> FcqProcessResult<T> read() {
         return null;
     }
 
     @Override
-    protected void runnableCall() {
+    public void run() {
 
     }
 }
