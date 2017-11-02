@@ -11,8 +11,7 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 /**
- * Description: fcq队列的aspect类,
- *              用来拦截一切{@link merorin.cloud.cloudnote.fcq.core.AbstractFcqQueueProcessor}的pubic方法
+ * Description: fcq队列的aspect类
  *
  * @author guobin On date 2017/11/2.
  * @since jdk 1.8
