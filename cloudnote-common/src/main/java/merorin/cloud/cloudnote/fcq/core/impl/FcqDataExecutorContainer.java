@@ -6,6 +6,7 @@ import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 import merorin.cloud.cloudnote.fcq.util.FcqConfigContainer;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Description: fcq数据执行者的容器
@@ -36,8 +37,7 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
         //获取所有的执行者
         final List<AbstractFcqDataExecutor> executors = this.configContainer.getAllExecutors();
         //过滤无需线程的数据执行者,为需要线程的数据执行者提交线程
-        executors.stream().filter(AbstractFcqDataExecutor::isNeedThread)
-                .forEach(this::setUpAndCommitThread);
+        executors.forEach(this::setUpAndCommitThread);
     }
 
     /**
@@ -45,7 +45,13 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
      * @param executor 需要创建线程的执行者
      */
     private void setUpAndCommitThread(AbstractFcqDataExecutor executor) {
-        executor.setProcessorContainer(this.processorContainer);
-        this.configContainer.getThreadPool().submit(executor::run);
+        Optional.ofNullable(executor).ifPresent(item -> {
+            //无论是否需要创建一条守护线程都必须设置一下processorContainer
+            item.setProcessorContainer(this.processorContainer);
+            if (item.isNeedThread()) {
+                this.configContainer.getThreadPool().submit(executor::run);
+            }
+        });
+
     }
 }
