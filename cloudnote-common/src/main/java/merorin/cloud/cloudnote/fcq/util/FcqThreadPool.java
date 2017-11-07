@@ -18,12 +18,12 @@ public class FcqThreadPool {
 
     private static final Logger LOG = LoggerFactory.getLogger(FcqThreadPool.class);
 
+    private static final String THREAD_FACTORY_NAME = "FcqThread";
+
     /**
      * 线程池执行者
      */
     private final ThreadPoolExecutor threadPoolExecutor;
-
-    private static final String THREAD_FACTORY_NAME = "FcqThread";
 
     /**
      * 构造器

@@ -1,8 +1,8 @@
 package merorin.cloud.cloudnote.fcq.core.impl;
 
 import merorin.cloud.cloudnote.fcq.core.AbstractFcqQueueProcessor;
-import merorin.cloud.cloudnote.fcq.io.param.FcqCommonParam;
-import merorin.cloud.cloudnote.fcq.io.param.FcqFunctionParam;
+import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
+import merorin.cloud.cloudnote.fcq.io.param.FcqParam;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 
 /**
@@ -15,37 +15,72 @@ import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 public class ErrorFcqQueueProcessor extends AbstractFcqQueueProcessor {
 
     @Override
-    public <T> FcqProcessResult<T> pushForCommon(FcqCommonParam<T> param) {
-        return null;
+    public FcqProcessResult offer(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override
-    public <T, R> FcqProcessResult<T> pushForFunction(FcqFunctionParam<T, R> param) {
-        return null;
+    public FcqProcessResult poll(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override
-    public <T> FcqProcessResult<T> poll(FcqCommonParam<T> param) {
-        return null;
+    public FcqProcessResult getFromHead(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override
-    public <T> FcqProcessResult<T> getFromHead(FcqCommonParam<T> param) {
-        return null;
+    public FcqProcessResult findValue(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override
-    public <T> FcqProcessResult<T> findValue(FcqCommonParam<T> param) {
-        return null;
+    public FcqProcessResult removeValue(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override
-    public <T> FcqProcessResult<T> removeValue(FcqCommonParam<T> param) {
-        return null;
+    public FcqProcessResult getAllElements(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override
-    public <T> FcqProcessResult<T> getAllElements(FcqCommonParam<T> param) {
-        return null;
+    public FcqProcessResult pollAllElements(FcqParam param) {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 }

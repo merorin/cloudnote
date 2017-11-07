@@ -1,6 +1,7 @@
 package merorin.cloud.cloudnote.fcq.core.impl;
 
 import merorin.cloud.cloudnote.fcq.core.AbstractFcqDataExecutor;
+import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 
 /**
@@ -27,8 +28,13 @@ public class ErrorFcqDataExecutor extends AbstractFcqDataExecutor {
     }
 
     @Override
-    public <T> FcqProcessResult<T> read() {
-        return null;
+    public FcqProcessResult read() {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
+
+        return result;
     }
 
     @Override

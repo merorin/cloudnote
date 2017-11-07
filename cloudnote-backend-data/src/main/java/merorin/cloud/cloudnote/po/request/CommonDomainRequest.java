@@ -29,6 +29,11 @@ public class CommonDomainRequest<T extends BasePO> {
     private boolean needPaging = true;
 
     /**
+     * 数据库开始查询的索引号
+     */
+    private int start = -1;
+
+    /**
      * 请求中的参数封装
      */
     private T value;
@@ -55,6 +60,22 @@ public class CommonDomainRequest<T extends BasePO> {
 
     public void setNeedPaging(boolean needPaging) {
         this.needPaging = needPaging;
+    }
+
+    public int getStart() {
+        return this.start < 0 ? this.start * this.pageSize : this.start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    /**
+     * 获取数据库查询的结束位置
+     * @return 结束位置
+     */
+    public int getEnd() {
+        return (this.page + 1) * this.pageSize;
     }
 
     public T getValue() {

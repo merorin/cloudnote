@@ -2,6 +2,7 @@ package merorin.cloud.cloudnote.fcq.core.impl;
 
 import merorin.cloud.cloudnote.fcq.core.AbstractFcqDataExecutor;
 import merorin.cloud.cloudnote.fcq.core.FcqDataExecutable;
+import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 import merorin.cloud.cloudnote.fcq.util.FcqConfigContainer;
 
@@ -19,17 +20,29 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
 
     private final FcqConfigContainer configContainer;
 
-    private final FcqQueueProcessorContainer processorContainer;
-
-    public FcqDataExecutorContainer(FcqConfigContainer configContainer,
-                                    FcqQueueProcessorContainer processorContainer) {
+    public FcqDataExecutorContainer(FcqConfigContainer configContainer) {
         this.configContainer = configContainer;
-        this.processorContainer = processorContainer;
     }
 
     @Override
-    public <T> FcqProcessResult<T> read() {
-        return null;
+    public FcqProcessResult read() {
+        FcqProcessResult result = new FcqProcessResult();
+
+        result.setCode(FcqResultConstant.Code.ERROR);
+        result.setMessage("该方法在FcqDataExecutorContainer中尚未实现.");
+
+        return result;
+    }
+
+    /**
+     * 外界读取执行
+     * @param fcqQueueName 队列名字
+     */
+    public void read(String fcqQueueName) {
+        Optional.of(fcqQueueName)
+                .map(this.configContainer::getExecutor)
+                .filter(this::isErrorExecutor)
+                .ifPresent(AbstractFcqDataExecutor::read);
     }
 
     @Override
@@ -41,17 +54,25 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
     }
 
     /**
+     * 判断是否是错误的数据执行者
+     * @param executor 传入的参数
+     * @return 得到的处理者
+     */
+    private boolean isErrorExecutor(final AbstractFcqDataExecutor executor) {
+        return Optional.ofNullable(executor)
+                .map(item -> !(item instanceof ErrorFcqDataExecutor))
+                .orElse(false);
+    }
+
+    /**
      * 设置并提交一条线程至线程池
      * @param executor 需要创建线程的执行者
      */
     private void setUpAndCommitThread(AbstractFcqDataExecutor executor) {
         Optional.ofNullable(executor).ifPresent(item -> {
-            //无论是否需要创建一条守护线程都必须设置一下processorContainer
-            item.setProcessorContainer(this.processorContainer);
             if (item.isNeedThread()) {
                 this.configContainer.getThreadPool().submit(executor::run);
             }
         });
-
     }
 }

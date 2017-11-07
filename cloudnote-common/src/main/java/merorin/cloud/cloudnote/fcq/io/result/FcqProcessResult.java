@@ -1,17 +1,19 @@
 package merorin.cloud.cloudnote.fcq.io.result;
 
+import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
+import merorin.cloud.cloudnote.fcq.io.param.FcqParam;
+
 import java.util.List;
 
 /**
  * Description: fcq队列处理返回结果
  *
- * @param <T> 返回数据的类型
  *
  * @author guobin On date 2017/10/31.
  * @version 1.0
  * @since jdk 1.8
  */
-public class FcqProcessResult<T> {
+public class FcqProcessResult {
 
     /**
      * 处理结果的返回码
@@ -46,7 +48,39 @@ public class FcqProcessResult<T> {
     /**
      * 返回的数据
      */
-    private List<T> values;
+    private List<FcqParam> values;
+
+    public FcqProcessResult() {
+        this.code = FcqResultConstant.Code.ERROR;
+        this.message = FcqResultConstant.Message.ERROR;
+    }
+
+    public FcqProcessResult(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+    /**
+     * 构造一个成功的返回实例
+     * @param message 传入的信息
+     * @return 得到的返回实例
+     */
+    public static FcqProcessResult success(String message) {
+        return new FcqProcessResult(FcqResultConstant.Code.SUCCESS, message);
+    }
+
+    /**
+     * 构造一个失败的返回实例
+     * @param message 传入的信息
+     * @return 得到的返回实例
+     */
+    public static FcqProcessResult error(String message) {
+        return new FcqProcessResult(FcqResultConstant.Code.ERROR, message);
+    }
+
+    public boolean isSuccess() {
+        return this.code == FcqResultConstant.Code.SUCCESS;
+    }
 
     public int getCode() {
         return code;
@@ -96,11 +130,11 @@ public class FcqProcessResult<T> {
         this.page = page;
     }
 
-    public List<T> getValues() {
+    public List<FcqParam> getValues() {
         return values;
     }
 
-    public void setValues(List<T> values) {
+    public void setValues(List<FcqParam> values) {
         this.values = values;
     }
 }

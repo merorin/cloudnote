@@ -3,14 +3,10 @@ package merorin.cloud.cloudnote.redis.impl;
 import merorin.cloud.cloudnote.bo.data.redis.RedisCacheParam;
 import merorin.cloud.cloudnote.bo.result.redis.RedisCacheResult;
 import merorin.cloud.cloudnote.dao.user.UserDao;
-import merorin.cloud.cloudnote.fcq.io.param.FcqFunctionParam;
-import merorin.cloud.cloudnote.po.data.user.UserPO;
-import merorin.cloud.cloudnote.po.result.CommonDomainResult;
 import merorin.cloud.cloudnote.redis.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
-import java.util.function.Function;
 
 /**
  * Description: redis缓存管理者实现
@@ -29,10 +25,6 @@ public class RedisCacheManagerImpl<T> implements RedisCacheManager<T> {
 
     @Override
     public RedisCacheResult<T> saveValue(RedisCacheParam<T> request) {
-        UserPO user = new UserPO();
-        Function<UserPO, CommonDomainResult<UserPO>> mapper = this.userDao::saveUser;
-        FcqFunctionParam<UserPO, CommonDomainResult<UserPO>> param = new FcqFunctionParam<>();
-
         return null;
     }
 

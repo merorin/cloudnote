@@ -13,10 +13,11 @@ public interface FcqDataExecutable {
 
     /**
      * 由外界发起的读取请求
-     * @param <T> 读取的核心数据类型
+     * 这个函数里为外界主动发起的队列read请求并进行处理
+     * 例如外界将数据poll出去并移交其他地方处理,那么方法均写在这个方法中
      * @return 处理结果
      */
-    <T> FcqProcessResult<T> read();
+    FcqProcessResult read();
 
     /**
      * 此方法被调用时会启动一条{@code Runnable}守护线程

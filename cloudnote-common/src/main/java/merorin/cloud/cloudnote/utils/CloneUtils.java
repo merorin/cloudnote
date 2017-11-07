@@ -1,9 +1,6 @@
 package merorin.cloud.cloudnote.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 /**
  * Description: 用于类克隆的工具类
@@ -22,7 +19,7 @@ public class CloneUtils {
      * @throws Exception 抛出的异常
      */
     @SuppressWarnings("unchecked")
-    public static <T> T cloneFrom(T src) throws Exception {
+    public static <T extends Serializable> T cloneFrom(T src) throws Exception {
         //为空直接返回
         if (src == null) {
             return null;
