@@ -60,7 +60,7 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
         result.setMessage("该方法在对应的数据执行者中尚未实现.");
 
         return result;
-    };
+    }
 
     /**
      * 此方法被调用时会启动一条守护线程来执行该方法
