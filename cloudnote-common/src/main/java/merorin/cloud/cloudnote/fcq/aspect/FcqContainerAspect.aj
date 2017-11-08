@@ -8,8 +8,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
 
 /**
  * Description: fcq中container中的aspect类
@@ -41,8 +44,10 @@ public aspect FcqContainerAspect {
     public FcqProcessResult filter(ProceedingJoinPoint point) {
         FcqProcessResult result;
         Object[] params = point.getArgs();
+        MethodSignature signature = (MethodSignature)point.getSignature();
+        Method method = signature.getMethod();
 
-        ValidateResponse validateResponse = Validator.validate(params);
+        ValidateResponse validateResponse = Validator.validate(method.getName(), params);
         if (validateResponse.isSuccess()) {
             try {
                 result = (FcqProcessResult) point.proceed();

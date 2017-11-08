@@ -22,9 +22,10 @@ public class AnnotationParser {
     /**
      * 解析注解
      * @param param 传入的参数
+     * @param methodName 校验的方法名
      * @return 解析的结果
      */
-    public static List<String> parseAnn(Object param) {
+    public static List<String> parseAnn(String methodName, Object param) {
         final List<String> errMsgs = new LinkedList<>();
 
         final Field[] fields = param.getClass().getFields();
@@ -33,10 +34,9 @@ public class AnnotationParser {
                 final Object fieldValue = field.get(param);
                 final String fieldName = field.getName();
                 //校验@NotNull
-                if (field.isAnnotationPresent(NotNull.class)) {
-                    Optional.ofNullable(AnnotationParser.parseNonNull(fieldName, fieldValue))
-                            .ifPresent(errMsgs::addAll);
-                }
+                Optional.ofNullable(field.getAnnotation(NotNull.class))
+                        .map(ann -> AnnotationParser.parseNonNull(fieldName, fieldValue, methodName, ann))
+                        .ifPresent(errMsgs::addAll);
                 //校验@Limit
                 Optional.ofNullable(field.getAnnotation(Limit.class))
                         .map(ann -> AnnotationParser.parseLimit(fieldName, fieldValue, ann))
@@ -57,10 +57,32 @@ public class AnnotationParser {
      * 解析NonNull注解
      * @param fieldName 字段名
      * @param fieldValue 字段的值
+     * @param methodName 校验的方法名
+     * @param ann 注解
      * @return 返回的错误信息,如果无错则返回null
      */
-    private static Set<String> parseNonNull(String fieldName, Object fieldValue) {
-        return new NotNullValidator().test(fieldName, fieldValue);
+    private static Set<String> parseNonNull(String fieldName, Object fieldValue, String methodName, NotNull ann) {
+
+        return AnnotationParser.isNotNullNeeded(ann.skip(), methodName) ?
+                new NotNullValidator().test(fieldName, fieldValue) : new HashSet<>();
+    }
+
+    /**
+     * 判断是否需要进行非空判断
+     * @param methods 配置好的方法名数组
+     * @param tarMethod 待校验的方法
+     * @return 判断结果
+     */
+    private static boolean isNotNullNeeded(String[] methods, String tarMethod) {
+        int length = Optional.ofNullable(methods).map(arr -> arr.length).orElse(0);
+        //如果methods为空数组,那么默认判断为包含待校验方法
+        boolean exist = length <= 0;
+        //遍历数组,查找数组中是否包含待校验方法
+        while (!exist && length-- > 0) {
+            exist = methods[length - 1].equals(tarMethod);
+        }
+
+        return exist;
     }
 
     /**
