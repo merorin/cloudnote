@@ -67,7 +67,9 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
      * 所有需要启动守护线程的执行者都必须实现这个方法
      */
     @Override
-    public abstract void run();
+    public void run() {
+        //默认不实现任何方法
+    }
 
     /**
      * 调用传入的function
