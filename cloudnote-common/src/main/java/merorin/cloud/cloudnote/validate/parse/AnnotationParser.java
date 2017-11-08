@@ -78,8 +78,8 @@ public class AnnotationParser {
         //如果methods为空数组,那么默认判断为包含待校验方法
         boolean exist = length <= 0;
         //遍历数组,查找数组中是否包含待校验方法
-        while (!exist && length-- > 0) {
-            exist = methods[length - 1].equals(tarMethod);
+        while (!exist && --length >= 0) {
+            exist = methods[length].equals(tarMethod);
         }
 
         return exist;
