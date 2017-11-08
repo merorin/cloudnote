@@ -3,6 +3,7 @@ package merorin.cloud.cloudnote.fcq.io.param;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import merorin.cloud.cloudnote.fcq.util.FcqFuncPerformer;
+import merorin.cloud.cloudnote.validate.annotation.NotNull;
 
 import java.time.Instant;
 
@@ -23,6 +24,7 @@ public class FcqParam {
     /**
      * fcq队列的队列名
      */
+    @NotNull
     private String fcqQueueName;
 
     /**
@@ -50,11 +52,6 @@ public class FcqParam {
      * 传入的待执行函数
      */
     private FcqFuncPerformer performer;
-
-    /**
-     * 读取后是否要删除
-     */
-    private boolean removeAfterRead;
 
     public String getFcqTypeName() {
         return fcqTypeName;
@@ -110,14 +107,6 @@ public class FcqParam {
 
     public void setPerformer(FcqFuncPerformer performer) {
         this.performer = performer;
-    }
-
-    public boolean isRemoveAfterRead() {
-        return removeAfterRead;
-    }
-
-    public void setRemoveAfterRead(boolean removeAfterRead) {
-        this.removeAfterRead = removeAfterRead;
     }
 
     /**
