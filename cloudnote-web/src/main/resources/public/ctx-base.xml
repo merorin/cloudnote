@@ -2,8 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <description>spring公共配置文件</description>
 
@@ -21,4 +22,22 @@
             </list>
         </property>
     </bean>
+
+    <!--配置aop-->
+    <!--只是验证的话就不用aop了-->
+    <!--<bean id="userDaoAspect" class="merorin.cloud.cloudnote.aspect.UserDaoAspect"/>-->
+
+    <!--proxy-target-class为true时指定只能使用CGLIB进行代理,对于final修辞的方法会抛出错误-->
+    <!--<aop:config proxy-target-class="true">-->
+    <!--<aop:aspect ref="userDaoAspect">-->
+    <!--<aop:pointcut id="userPOValidateCut" expression="execution(public * merorin.cloud.cloudnote.dao.user.UserDao+.*(merorin.cloud.cloudnote.po.data.user.UserPO))"/>-->
+    <!--<aop:around method="validatePO" pointcut-ref="userPOValidateCut"/>-->
+    <!--</aop:aspect>-->
+    <!--<aop:aspect ref="userDaoAspect">-->
+    <!--<aop:pointcut id="userReqValidCut" expression="execution(public * merorin.cloud.cloudnote.dao.user.UserDao+.*(merorin.cloud.cloudnote.po.request.DomainRequest))"/>-->
+    <!--<aop:around method="validateRequest" pointcut-ref="userReqValidCut"/>-->
+    <!--</aop:aspect>-->
+    <!--</aop:config>-->
+
+    <import resource="ctx-mongodb.xml"/>
 </beans>

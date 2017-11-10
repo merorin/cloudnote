@@ -1,6 +1,7 @@
 package merorin.cloud.cloudnote.po.data.user;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import merorin.cloud.cloudnote.common.AuthLevelEnum;
 import merorin.cloud.cloudnote.common.GenderEnum;
 import merorin.cloud.cloudnote.po.data.BasePO;
@@ -177,7 +178,7 @@ public class UserPO extends BasePO {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return JSON.toJSONString(this, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     @Override

@@ -19,5 +19,5 @@ public @interface NotNull {
     /**
      * 表示在哪些方法里这个参数校验会被忽视
      */
-    String[] skip();
+    String[] skip() default {};
 }

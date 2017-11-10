@@ -2,11 +2,10 @@ package merorin.cloud.cloudnote.fcq.aspect;
 
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 import merorin.cloud.cloudnote.utils.StringUtils;
-import merorin.cloud.cloudnote.validate.core.Validator;
+import merorin.cloud.cloudnote.validate.core.AnnValidator;
 import merorin.cloud.cloudnote.validate.io.ValidateResponse;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -22,8 +21,7 @@ import java.lang.reflect.Method;
  * @since jdk 1.8
  * @version 1.0
  */
-@Aspect
-public aspect FcqContainerAspect {
+public class FcqContainerAspect {
 
     private static final Logger LOG = LoggerFactory.getLogger(FcqContainerAspect.class);
 
@@ -47,7 +45,7 @@ public aspect FcqContainerAspect {
         MethodSignature signature = (MethodSignature)point.getSignature();
         Method method = signature.getMethod();
 
-        ValidateResponse validateResponse = Validator.validate(method.getName(), params);
+        ValidateResponse validateResponse = AnnValidator.validate(method.getName(), params);
         if (validateResponse.isSuccess()) {
             try {
                 result = (FcqProcessResult) point.proceed();

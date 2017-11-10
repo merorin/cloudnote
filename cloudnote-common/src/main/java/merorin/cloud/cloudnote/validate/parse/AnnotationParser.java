@@ -20,6 +20,11 @@ import java.util.*;
 public class AnnotationParser {
 
     /**
+     * 序列化的字段名
+     */
+    private static final String SERIAL_FIELD_NAME = "serialVersionUID";
+
+    /**
      * 解析注解
      * @param param 传入的参数
      * @param methodName 校验的方法名
@@ -28,25 +33,29 @@ public class AnnotationParser {
     public static List<String> parseAnn(String methodName, Object param) {
         final List<String> errMsgs = new LinkedList<>();
 
-        final Field[] fields = param.getClass().getFields();
+        final Field[] fields = param.getClass().getDeclaredFields();
         for (Field field : fields) {
-            try {
-                final Object fieldValue = field.get(param);
-                final String fieldName = field.getName();
-                //校验@NotNull
-                Optional.ofNullable(field.getAnnotation(NotNull.class))
-                        .map(ann -> AnnotationParser.parseNonNull(fieldName, fieldValue, methodName, ann))
-                        .ifPresent(errMsgs::addAll);
-                //校验@Limit
-                Optional.ofNullable(field.getAnnotation(Limit.class))
-                        .map(ann -> AnnotationParser.parseLimit(fieldName, fieldValue, ann))
-                        .ifPresent(errMsgs::addAll);
-                //校验@Validate
-                Optional.ofNullable(field.getAnnotation(Validate.class))
-                        .map(ann -> AnnotationParser.parseValidate(fieldName, fieldValue, ann))
-                        .ifPresent(errMsgs::addAll);
-            } catch (IllegalAccessException e) {
-                errMsgs.add(e.getMessage());
+            //serialVersionUID不进行校验
+            if (!SERIAL_FIELD_NAME.equals(field.getName())) {
+                try {
+                    field.setAccessible(true);
+                    final Object fieldValue = field.get(param);
+                    final String fieldName = field.getName();
+                    //校验@NotNull
+                    Optional.ofNullable(field.getAnnotation(NotNull.class))
+                            .map(ann -> AnnotationParser.parseNonNull(fieldName, fieldValue, methodName, ann))
+                            .ifPresent(errMsgs::addAll);
+                    //校验@Limit
+                    Optional.ofNullable(field.getAnnotation(Limit.class))
+                            .map(ann -> AnnotationParser.parseLimit(fieldName, fieldValue, ann))
+                            .ifPresent(errMsgs::addAll);
+                    //校验@Validate
+                    Optional.ofNullable(field.getAnnotation(Validate.class))
+                            .map(ann -> AnnotationParser.parseValidate(fieldName, fieldValue, ann))
+                            .ifPresent(errMsgs::addAll);
+                } catch (IllegalAccessException e) {
+                    errMsgs.add(e.getMessage());
+                }
             }
         }
 

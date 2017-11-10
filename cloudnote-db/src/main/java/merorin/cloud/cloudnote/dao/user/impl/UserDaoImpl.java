@@ -1,10 +1,13 @@
 package merorin.cloud.cloudnote.dao.user.impl;
 
+import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.common.ResultConstant;
 import merorin.cloud.cloudnote.dao.user.UserDao;
 import merorin.cloud.cloudnote.po.data.user.UserPO;
-import merorin.cloud.cloudnote.po.request.CommonDomainRequest;
-import merorin.cloud.cloudnote.po.result.CommonDomainResult;
+import merorin.cloud.cloudnote.po.request.DomainRequest;
+import merorin.cloud.cloudnote.po.result.DomainResult;
+import merorin.cloud.cloudnote.utils.StringUtils;
+import merorin.cloud.cloudnote.validate.core.FuncValidator;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,6 +18,7 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -30,98 +34,111 @@ public class UserDaoImpl implements UserDao {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public CommonDomainResult<UserPO> getById(String id) {
+    public DomainResult<UserPO> getById(String id) {
+        return FuncValidator.of(id)
+                .success((idVal) -> {
+                    final DomainResult<UserPO> result = new DomainResult<>();
+                    try {
+                        final UserPO user = this.mongoTemplate.findById(idVal, UserPO.class);
 
-        return Optional.ofNullable(id).map((idVal) -> {
-            final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
-            try {
-                final UserPO user = this.mongoTemplate.findById(idVal, UserPO.class);
+                        List<UserPO> list = Optional.ofNullable(user)
+                                .map(Collections::singletonList)
+                                .orElse(Collections.emptyList());
+                        result.setValues(list);
+                        result.setCount(list.size());
+                        result.setTotalCount(list.size());
+                        result.setCode(ResultConstant.Code.SUCCESS);
+                        String message = list.isEmpty() ? ResultConstant.Message.NOT_FOUND : ResultConstant.Message.SUCCESS;
+                        result.setMessage(message);
+                    } catch (Exception ex) {
+                        result.setMessage(ResultConstant.Message.ERROR);
+                        result.setExceptionMsg(ex.getMessage());
+                    }
 
-                List<UserPO> list = Optional.ofNullable(user)
-                        .map(Collections::singletonList)
-                        .orElse(Collections.emptyList());
-                result.setValues(list);
-                result.setCount(list.size());
-                result.setTotalCount(list.size());
-                result.setCode(ResultConstant.Code.SUCCESS);
-                String message = list.isEmpty() ? ResultConstant.Message.NOT_FOUND : ResultConstant.Message.SUCCESS;
-                result.setMessage(message);
-            } catch (Exception ex) {
-                result.setMessage(ResultConstant.Message.ERROR);
-                result.setExceptionMsg(ex.getMessage());
-            }
-
-            return result;
-        }).orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                    return result;
+                })
+                .error(this::processIfError)
+                .withValidation();
     }
 
     @Override
-    public CommonDomainResult<UserPO> listByRequest(CommonDomainRequest<UserPO> request) {
+    public DomainResult<UserPO> listByRequest(DomainRequest<UserPO> request) {
+        return FuncValidator.of(request)
+                .success((req) -> {
+                    final DomainResult<UserPO> result = new DomainResult<>();
 
-        return Optional.ofNullable(request).map((req) -> {
-            final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
+                    //设置查询条件
+                    final Query query = this.buildCommonQuery(req);
 
-            //设置查询条件
-            final Query query = this.buildCommonQuery(req);
+                    try {
+                        int totalCount = 0;
+                        //判断是否要进行分页
+                        if (req.isNeedPaging()) {
+                            totalCount = (int) this.mongoTemplate.count(query, UserPO.class);
+                            query.skip(req.getPage() * req.getPageSize());
+                            query.limit(req.getPageSize());
+                        }
 
-            try {
-                int totalCount = 0;
-                //判断是否要进行分页
-                if (req.isNeedPaging()) {
-                    totalCount = (int) this.mongoTemplate.count(query, UserPO.class);
-                    query.skip(req.getPage() * req.getPageSize());
-                    query.limit(req.getPageSize());
-                }
+                        List<UserPO> list = this.mongoTemplate.find(query, UserPO.class);
 
-                List<UserPO> list = this.mongoTemplate.find(query, UserPO.class);
+                        result.setCode(ResultConstant.Code.SUCCESS);
+                        result.setValues(list);
+                        result.setCount(list.size());
+                        totalCount = Math.max(totalCount, list.size());
+                        result.setTotalCount(totalCount);
+                        String message = list.isEmpty() ? ResultConstant.Message.NOT_FOUND : ResultConstant.Message.SUCCESS;
+                        result.setMessage(message);
+                    } catch (Exception ex) {
+                        result.setMessage(ResultConstant.Message.ERROR);
+                        result.setExceptionMsg(ex.getMessage());
+                    }
 
-                result.setCode(ResultConstant.Code.SUCCESS);
-                result.setValues(list);
-                result.setCount(list.size());
-                totalCount = Math.max(totalCount, list.size());
-                result.setTotalCount(totalCount);
-                String message = list.isEmpty() ? ResultConstant.Message.NOT_FOUND : ResultConstant.Message.SUCCESS;
-                result.setMessage(message);
-            } catch (Exception ex) {
-                result.setMessage(ResultConstant.Message.ERROR);
-                result.setExceptionMsg(ex.getMessage());
-            }
-
-            return result;
-        }).orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                    return result;
+                })
+                .error(this::processIfError)
+                .withValidation();
     }
 
     @Override
-    public CommonDomainResult<UserPO> countByRequest(CommonDomainRequest<UserPO> request) {
-        return Optional.ofNullable(request).map((req) -> {
-            final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
+    public DomainResult<UserPO> countByRequest(DomainRequest<UserPO> request) {
+        return FuncValidator.of(request)
+                .success((req) -> {
+                    final DomainResult<UserPO> result = new DomainResult<>();
 
-            //设置查询条件
-            final Query query = this.buildCommonQuery(req);
+                    //设置查询条件
+                    final Query query = this.buildCommonQuery(req);
 
-            try {
-                int count = (int) this.mongoTemplate.count(query, UserPO.class);
+                    try {
+                        int count = (int) this.mongoTemplate.count(query, UserPO.class);
 
-                result.setCode(ResultConstant.Code.SUCCESS);
-                result.setCount(count);
-                result.setTotalCount(count);
-                result.setMessage(ResultConstant.Message.SUCCESS);
-            } catch (Exception ex) {
-                result.setMessage(ResultConstant.Message.ERROR);
-                result.setExceptionMsg(ex.getMessage());
-            }
+                        result.setCode(ResultConstant.Code.SUCCESS);
+                        result.setCount(count);
+                        result.setTotalCount(count);
+                        result.setMessage(ResultConstant.Message.SUCCESS);
+                    } catch (Exception ex) {
+                        result.setMessage(ResultConstant.Message.ERROR);
+                        result.setExceptionMsg(ex.getMessage());
+                    }
 
-            return result;
-        }).orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                    return result;
+                })
+                .error(this::processIfError)
+                .withValidation();
     }
 
     @Override
-    public CommonDomainResult<UserPO> saveUser(UserPO user) {
-
-        return Optional.ofNullable(user)
-                .filter(param -> param.getName() != null && param.getMobilePhone() != null && param.getPassword() != null)
-                .map(value -> {
-                    final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
+    public DomainResult<UserPO> saveUser(UserPO user) {
+        return FuncValidator.of(user)
+                .notNull(UserPO::getName, "名字不能为空.")
+                .notNull(UserPO::getAccount, "账户名不能为空.")
+                .notNull(UserPO::getMobilePhone, "手机不能为空.")
+                .notNull(UserPO::getPassword, "密码不能为空")
+                .on(value -> value.getAccount().equals(value.getPassword()), "账户名和密码不能相同.")
+                .onIf(value -> StringUtils.isMobilePhone(value.getMobilePhone()),
+                        "请输入正确的手机号",
+                        value -> Objects.nonNull(value.getMobilePhone()))
+                .success(value -> {
+                    final DomainResult<UserPO> result = new DomainResult<>();
 
                     final LocalDateTime now = LocalDateTime.now();
                     value.setCreateTime(now);
@@ -140,15 +157,15 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .error(this::processIfError)
+                .withValidation();
     }
 
     @Override
-    public CommonDomainResult<UserPO> removeByRequest(CommonDomainRequest<UserPO> request) {
-
-        return Optional.ofNullable(request)
-                .map(req -> {
-                    final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
+    public DomainResult<UserPO> removeByRequest(DomainRequest<UserPO> request) {
+        return FuncValidator.of(request)
+                .success(req -> {
+                    final DomainResult<UserPO> result = new DomainResult<>();
 
                     final Query query = this.buildCommonQuery(req);
 
@@ -169,16 +186,16 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .error(this::processIfError)
+                .withValidation();
     }
 
     @Override
-    public CommonDomainResult<UserPO> updateById(UserPO user) {
-
-        return Optional.ofNullable(user)
-                .filter(param -> param.getId() != null)
-                .map(value -> {
-                    final CommonDomainResult<UserPO> result = new CommonDomainResult<>();
+    public DomainResult<UserPO> updateById(UserPO user) {
+        return FuncValidator.of(user)
+                .notNull(UserPO::getId, "id不能为空.")
+                .success(value -> {
+                    final DomainResult<UserPO> result = new DomainResult<>();
 
                     final Update update = new Update();
                     update.currentDate("gmt_modified");
@@ -221,7 +238,8 @@ public class UserDaoImpl implements UserDao {
 
                     return result;
                 })
-                .orElse(new CommonDomainResult<>(ResultConstant.Code.ERROR, ResultConstant.Message.MISSING_PARAM));
+                .error(this::processIfError)
+                .withValidation();
     }
 
     /**
@@ -229,7 +247,7 @@ public class UserDaoImpl implements UserDao {
      * @param request 传入的请求
      * @return 构造出来的query类
      */
-    private Query buildCommonQuery(CommonDomainRequest<UserPO> request){
+    private Query buildCommonQuery(DomainRequest<UserPO> request){
         final Query query = new Query();
         
         Optional.ofNullable(request.getValue()).ifPresent(req -> {
@@ -258,8 +276,12 @@ public class UserDaoImpl implements UserDao {
         return query;
     }
 
-    @Override
-    public CommonDomainResult<UserPO> clearAll() {
-        return null;
+    /**
+     * 验证失败的处理函数
+     * @param validator 验证器
+     * @return 处理结果
+     */
+    private DomainResult<UserPO> processIfError(FuncValidator validator) {
+        return new DomainResult<>(ResultConstant.Code.ERROR, JSON.toJSONString(validator.getErrors()));
     }
 }

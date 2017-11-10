@@ -10,7 +10,7 @@ import merorin.cloud.cloudnote.po.data.BasePO;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonDomainRequest<T extends BasePO> {
+public class DomainRequest<T extends BasePO> {
 
     /**
      * 表示需要进行查询的页码

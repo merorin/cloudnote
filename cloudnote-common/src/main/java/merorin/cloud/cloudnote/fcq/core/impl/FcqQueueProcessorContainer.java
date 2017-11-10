@@ -1,10 +1,13 @@
 package merorin.cloud.cloudnote.fcq.core.impl;
 
+import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.fcq.core.AbstractFcqQueueProcessor;
 import merorin.cloud.cloudnote.fcq.core.FcqQueueProcessable;
+import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
 import merorin.cloud.cloudnote.fcq.io.param.FcqParam;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 import merorin.cloud.cloudnote.fcq.util.FcqConfigContainer;
+import merorin.cloud.cloudnote.validate.core.FuncValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +73,16 @@ public class FcqQueueProcessorContainer implements FcqQueueProcessable {
      * @return 执行结果
      */
     private FcqProcessResult execFunc(final FcqParam param, final Function<AbstractFcqQueueProcessor, FcqProcessResult> func) {
-        return Optional.of(param)
-                .map(this::doGetProcessor)
-                .filter(this::isErrorProcessor)
-                .map(func)
-                .orElse(this.buildErrorResult(param.getFcqQueueName(), param.getFcqTypeName()));
+        return FuncValidator.of(param)
+                .success(item -> {
+                    return Optional.of(item)
+                            .map(this::doGetProcessor)
+                            .filter(this::isErrorProcessor)
+                            .map(func)
+                            .orElse(this.buildErrorResult(item.getFcqQueueName(), item.getFcqTypeName()));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     /**
@@ -107,5 +115,14 @@ public class FcqQueueProcessorContainer implements FcqQueueProcessable {
         LOG.error("Fail to get processor with name, {}. The fcq type is {}.",queueName, typeName);
 
         return new FcqProcessResult();
+    }
+
+    /**
+     * 如果验证失败则返回结果
+     * @param validator 验证器
+     * @return 验证失败返回的结果
+     */
+    private FcqProcessResult ifValidateFailed(FuncValidator validator) {
+        return new FcqProcessResult(FcqResultConstant.Code.ERROR, JSON.toJSONString(validator.getErrors()));
     }
 }

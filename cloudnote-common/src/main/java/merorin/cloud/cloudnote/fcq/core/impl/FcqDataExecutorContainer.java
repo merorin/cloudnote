@@ -1,10 +1,14 @@
 package merorin.cloud.cloudnote.fcq.core.impl;
 
+import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.fcq.core.AbstractFcqDataExecutor;
 import merorin.cloud.cloudnote.fcq.core.FcqDataExecutable;
 import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 import merorin.cloud.cloudnote.fcq.util.FcqConfigContainer;
+import merorin.cloud.cloudnote.validate.core.FuncValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +21,8 @@ import java.util.Optional;
  * @since jdk 1.8
  */
 public class FcqDataExecutorContainer implements FcqDataExecutable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FcqDataExecutorContainer.class);
 
     private final FcqConfigContainer configContainer;
 
@@ -39,10 +45,18 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
      * @param fcqQueueName 队列名字
      */
     public void read(String fcqQueueName) {
-        Optional.of(fcqQueueName)
-                .map(this.configContainer::getExecutor)
-                .filter(this::isErrorExecutor)
-                .ifPresent(AbstractFcqDataExecutor::read);
+        FuncValidator.of(fcqQueueName)
+                .success(name -> {
+                    Optional.of(name)
+                            .map(this.configContainer::getExecutor)
+                            .filter(this::isErrorExecutor)
+                            .ifPresent(AbstractFcqDataExecutor::read);
+                })
+                .error(validator -> {
+                    LOG.error("Fail to read the queue due to {}.", JSON.toJSONString(validator.getErrors()));
+                })
+                .voidValidation();
+
     }
 
     @Override
@@ -70,8 +84,10 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
      */
     private void setUpAndCommitThread(AbstractFcqDataExecutor executor) {
         Optional.ofNullable(executor).ifPresent(item -> {
-            if (item.isNeedThread()) {
+            if (item.isNeedThread() && !item.isThreadActivated()) {
                 this.configContainer.getThreadPool().submit(executor::run);
+                //线程已经启动
+                item.setThreadActivated(true);
             }
         });
     }

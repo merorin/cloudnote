@@ -17,7 +17,7 @@ import java.util.List;
  * @version 1.0
  * @since jdk 1.8
  */
-public class CommonDomainResult<T extends BasePO> implements Serializable {
+public class DomainResult<T extends BasePO> implements Serializable {
 
     private static final long serialVersionUID = 1452706754677411742L;
 
@@ -59,11 +59,11 @@ public class CommonDomainResult<T extends BasePO> implements Serializable {
     /**
      * 构造器,默认构造一个错误的返回结果集合
      */
-    public CommonDomainResult() {
+    public DomainResult() {
         this(ResultConstant.Code.ERROR, ResultConstant.Message.ERROR);
     }
 
-    public CommonDomainResult(int code, String message) {
+    public DomainResult(int code, String message) {
         this.code = code;
         this.message = message;
     }

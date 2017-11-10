@@ -1,6 +1,7 @@
 package merorin.cloud.cloudnote.utils;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Description: 封装字符串的工具类
@@ -10,6 +11,16 @@ import java.util.Optional;
  * @since jdk 1.8
  */
 public class StringUtils {
+
+    /**
+     * 校验手机号的正则表达式
+     */
+    private static Pattern mobilePhoneRegex;
+
+    static {
+        String pattern = "^(1)\\d{10}$";
+        mobilePhoneRegex = Pattern.compile(pattern);
+    }
 
     /**
      * 字符串格式化工具,参数必须以{0}之类的样式标示出来.大括号中的数字从0开始。
@@ -30,6 +41,17 @@ public class StringUtils {
     }
 
     /**
+     * 判断一个字符串是否为手机号
+     * @param mp 传入的手机号
+     * @return 判断结果
+     */
+    public static boolean isMobilePhone(String mp) {
+        return Optional.ofNullable(mp)
+                .map(phone -> mobilePhoneRegex.matcher(phone).matches())
+                .orElse(false);
+    }
+
+    /**
      * 字符串替换
      * @param args 参数数组
      * @param src 原字符串
@@ -43,7 +65,7 @@ public class StringUtils {
                     .orElse("null");
 
             String replaceStr = "{" + i + "}";
-            target = target.replaceAll(replaceStr, argStr);
+            target = target.replace(replaceStr, argStr);
         }
 
         return target;

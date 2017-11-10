@@ -13,13 +13,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: 参数校验者
+ * Description: 基于字段注解的参数校验者
+ *              因为使用了反射机制,导致效率可能不高
  *
  * @author guobin On date 2017/11/7.
  * @version 1.0
  * @since jdk 1.8
  */
-public class Validator {
+public class AnnValidator {
 
     /**
      * 这个方法基于字段上的注解,没有打上注解的字段将不会执行验证
@@ -39,8 +40,8 @@ public class Validator {
         final ValidateResponse response = new ValidateResponse();
 
         final List<String> errors = Optional.ofNullable(params)
-                .map(args -> Validator.doIfParamNotNull(methodName, args))
-                .orElse(Collections.singletonList("Params waiting to be validated must not be null!"));
+                .map(args -> AnnValidator.doIfParamNotNull(methodName, args))
+                .orElseGet(() -> Collections.singletonList("Params waiting to be validated must not be null!"));
 
         response.addAllMsg(errors);
 
@@ -59,7 +60,8 @@ public class Validator {
         for (Object param : params) {
             final List<String> list = Optional.ofNullable(param)
                     .map(arg -> AnnotationParser.parseAnn(methodName, arg))
-                    .orElse(Collections.singletonList(StringUtils.replaceArgs("Param {0} cannot be null.", params)));
+                    //orElse会先执行StringUtils.replaceArgs方法哪怕最后是没有用的,orElseGet不会
+                    .orElseGet(() -> Collections.singletonList(StringUtils.replaceArgs("Param {0} cannot be null.", params)));
             errors.addAll(list);
         }
 

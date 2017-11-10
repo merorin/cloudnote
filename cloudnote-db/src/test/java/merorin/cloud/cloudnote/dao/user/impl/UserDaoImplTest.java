@@ -6,8 +6,8 @@ import merorin.cloud.cloudnote.common.GenderEnum;
 import merorin.cloud.cloudnote.common.ResultConstant;
 import merorin.cloud.cloudnote.dao.user.UserDao;
 import merorin.cloud.cloudnote.po.data.user.UserPO;
-import merorin.cloud.cloudnote.po.request.CommonDomainRequest;
-import merorin.cloud.cloudnote.po.result.CommonDomainResult;
+import merorin.cloud.cloudnote.po.request.DomainRequest;
+import merorin.cloud.cloudnote.po.result.DomainResult;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,22 +53,22 @@ public class UserDaoImplTest extends BaseTest {
     public void getById() throws Exception {
         Integer index = new Random().nextInt(this.dataList.size());
         UserPO user = this.dataList.get(index);
-        CommonDomainResult<UserPO> result = Optional.ofNullable(user)
+        DomainResult<UserPO> result = Optional.ofNullable(user)
                 .map(UserPO::getId)
                 .map(this.userDao::getById)
-                .orElse(new CommonDomainResult<>());
+                .orElse(new DomainResult<>());
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         assertEquals(user, result.getValue());
     }
 
     @Test
     public void listByRequest() throws Exception {
-        CommonDomainRequest<UserPO> request = new CommonDomainRequest<>();
+        DomainRequest<UserPO> request = new DomainRequest<>();
         request.setNeedPaging(false);
         UserPO userParam = new UserPO();
         userParam.setGender(GenderEnum.FEMALE);
         request.setValue(userParam);
-        CommonDomainResult<UserPO> result = this.userDao.listByRequest(request);
+        DomainResult<UserPO> result = this.userDao.listByRequest(request);
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         List<UserPO> expectedList = this.dataList.stream()
                 .filter(user -> GenderEnum.FEMALE.equals(user.getGender()))
@@ -78,13 +78,13 @@ public class UserDaoImplTest extends BaseTest {
 
     @Test
     public void countByRequest() throws Exception {
-        CommonDomainRequest<UserPO> request = new CommonDomainRequest<>();
+        DomainRequest<UserPO> request = new DomainRequest<>();
         request.setNeedPaging(false);
         UserPO userParam = new UserPO();
         userParam.setGender(GenderEnum.FEMALE);
         userParam.setAuthLevel(AuthLevelEnum.ADMIN);
         request.setValue(userParam);
-        CommonDomainResult<UserPO> result = this.userDao.countByRequest(request);
+        DomainResult<UserPO> result = this.userDao.countByRequest(request);
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         long expectedCount = this.dataList.stream()
                 .filter(user -> GenderEnum.FEMALE.equals(user.getGender()) && AuthLevelEnum.ADMIN.equals(user.getAuthLevel()))
@@ -95,7 +95,7 @@ public class UserDaoImplTest extends BaseTest {
     @Test
     public void saveUser() throws Exception {
         UserPO user = this.buildPO();
-        CommonDomainResult<UserPO> result = this.userDao.saveUser(user);
+        DomainResult<UserPO> result = this.userDao.saveUser(user);
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         if (result.isSuccess()) {
             this.dataList.add(user);
@@ -104,22 +104,22 @@ public class UserDaoImplTest extends BaseTest {
 
     @Test
     public void removeByRequest() throws Exception {
-        CommonDomainRequest<UserPO> request = new CommonDomainRequest<>();
+        DomainRequest<UserPO> request = new DomainRequest<>();
         request.setNeedPaging(false);
         UserPO userParam = new UserPO();
         userParam.setGender(GenderEnum.FEMALE);
         userParam.setAuthLevel(AuthLevelEnum.ADMIN);
         request.setValue(userParam);
         //进行删除
-        CommonDomainResult<UserPO> delResult = this.userDao.removeByRequest(request);
+        DomainResult<UserPO> delResult = this.userDao.removeByRequest(request);
         assertEquals(ResultConstant.Code.SUCCESS, delResult.getCode());
         List<UserPO> expectedList = this.dataList.stream()
                 .filter(user -> !GenderEnum.FEMALE.equals(user.getGender()) || !AuthLevelEnum.ADMIN.equals(user.getAuthLevel()))
                 .collect(Collectors.toList());
         //查询删除之后数据库中所剩的数据
-        CommonDomainRequest<UserPO> listRequest = new CommonDomainRequest<>();
+        DomainRequest<UserPO> listRequest = new DomainRequest<>();
         listRequest.setNeedPaging(false);
-        CommonDomainResult<UserPO> listResult = this.userDao.listByRequest(listRequest);
+        DomainResult<UserPO> listResult = this.userDao.listByRequest(listRequest);
         assertEquals(expectedList, listResult.getValues());
     }
 
@@ -127,14 +127,14 @@ public class UserDaoImplTest extends BaseTest {
     public void updateById() throws Exception {
         Integer index = new Random().nextInt(this.dataList.size());
         UserPO user = this.dataList.get(index);
-        CommonDomainResult<UserPO> result = Optional.ofNullable(user)
+        DomainResult<UserPO> result = Optional.ofNullable(user)
                 .map(value -> {
                     value.setPassword("ThisIsNewPassword");
                     value.setLastLoginIp("192.168.1.100");
                     return value;
                 })
                 .map(this.userDao::updateById)
-                .orElse(new CommonDomainResult<>());
+                .orElse(new DomainResult<>());
         assertEquals(ResultConstant.Code.SUCCESS, result.getCode());
         assertEquals(user, result.getValue());
     }
