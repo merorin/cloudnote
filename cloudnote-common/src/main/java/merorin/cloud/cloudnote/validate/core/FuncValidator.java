@@ -115,7 +115,7 @@ public class FuncValidator<T> {
      */
     public <R> FuncValidator<T> notNull(Function<? super T, ? extends R> mapper, String errorMsg, String errorCode) {
         if (Objects.nonNull(this.value) && Objects.isNull(mapper.apply(this.value))) {
-            this.errors.add(new ErrorEntry(errorMsg, errorCode));
+            this.errors.add(new ErrorEntry(errorCode, errorMsg));
         }
         return this;
     }
@@ -139,7 +139,7 @@ public class FuncValidator<T> {
      */
     public FuncValidator<T> on(Predicate<? super T> predicate, String errorMsg, String errorCode) {
         if (Objects.nonNull(this.value) && predicate.test(this.value)) {
-            this.errors.add(new ErrorEntry(errorMsg, errorCode));
+            this.errors.add(new ErrorEntry(errorCode, errorMsg));
         }
         return this;
     }
@@ -165,7 +165,7 @@ public class FuncValidator<T> {
      */
     public FuncValidator<T> onIf(Predicate<? super T> predicate, String errorMsg, String errorCode, Predicate<? super T> condition) {
         if (Objects.nonNull(this.value) && condition.test(this.value) && predicate.test(this.value)) {
-            this.errors.add(new ErrorEntry(errorMsg, errorCode));
+            this.errors.add(new ErrorEntry(errorCode, errorMsg));
         }
         return this;
     }

@@ -134,7 +134,7 @@ public class UserDaoImpl implements UserDao {
                 .notNull(UserPO::getMobilePhone, "手机不能为空.")
                 .notNull(UserPO::getPassword, "密码不能为空")
                 .on(value -> value.getAccount().equals(value.getPassword()), "账户名和密码不能相同.")
-                .onIf(value -> StringUtils.isMobilePhone(value.getMobilePhone()),
+                .onIf(value -> !StringUtils.isMobilePhone(value.getMobilePhone()),
                         "请输入正确的手机号",
                         value -> Objects.nonNull(value.getMobilePhone()))
                 .success(value -> {

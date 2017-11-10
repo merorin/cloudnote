@@ -18,7 +18,7 @@ public class StringUtils {
     private static Pattern mobilePhoneRegex;
 
     static {
-        String pattern = "^(1)\\d{10}$";
+        String pattern = "^(13[0-9]|14[0-9]|15[0-9]|166|17[0-9]|18[0-9]|19[8|9])\\d{8}$";
         mobilePhoneRegex = Pattern.compile(pattern);
     }
 
