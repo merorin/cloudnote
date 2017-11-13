@@ -2,9 +2,8 @@ package merorin.cloud.cloudnote.redis.impl;
 
 import merorin.cloud.cloudnote.bo.data.redis.RedisCacheParam;
 import merorin.cloud.cloudnote.bo.result.redis.RedisCacheResult;
-import merorin.cloud.cloudnote.dao.user.UserDao;
 import merorin.cloud.cloudnote.redis.RedisCacheManager;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.annotation.Resource;
 
@@ -15,31 +14,30 @@ import javax.annotation.Resource;
  * @version 1.0
  * @since jdk 1.8
  */
-public class RedisCacheManagerImpl<T> implements RedisCacheManager<T> {
+public class RedisCacheManagerImpl implements RedisCacheManager {
 
     @Resource
-    private RedisTemplate<String,T> redisTemplate;
-
-    @Resource
-    private UserDao userDao;
+    private StringRedisTemplate redisTemplate;
 
     @Override
-    public RedisCacheResult<T> saveValue(RedisCacheParam<T> request) {
+    public <T> RedisCacheResult<T> saveValue(RedisCacheParam<T> request) {
         return null;
     }
 
     @Override
-    public RedisCacheResult<T> getValue(RedisCacheParam<T> request) {
+    public <T> RedisCacheResult<T> getValue(RedisCacheParam<T> request) {
         return null;
     }
 
     @Override
-    public RedisCacheResult<T> removeValue(RedisCacheParam<T> request) {
+    public <T> RedisCacheResult<T> removeValue(RedisCacheParam<T> request) {
         return null;
     }
 
     @Override
-    public RedisCacheResult<T> listValuesByList(RedisCacheParam<T> request) {
+    public <T> RedisCacheResult<T> listValues(RedisCacheParam<T> request) {
         return null;
     }
+
+
 }

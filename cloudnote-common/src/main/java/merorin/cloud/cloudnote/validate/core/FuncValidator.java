@@ -266,7 +266,7 @@ public class FuncValidator<T> {
      */
     private void preValidate() {
         if (Objects.isNull(this.value)) {
-            this.errors.add(new ErrorEntry(this.nullParamCode, "The value need validating is missing!"));
+            this.errors.add(new ErrorEntry(this.nullParamCode, "Invalid parameter for null!"));
         }
     }
 
