@@ -36,7 +36,6 @@ public class CommonFcqQueueProcessor extends AbstractFcqQueueProcessor {
 
     @Override
     public FcqProcessResult offer(FcqParam param) {
-        final FcqProcessResult result = new FcqProcessResult();
 
         synchronized (this.queue) {
             if (this.queue.isEmpty()) {
@@ -47,40 +46,33 @@ public class CommonFcqQueueProcessor extends AbstractFcqQueueProcessor {
             LOG.debug("Offer successfully!Queue:'{0}', queueSize: {1}", this.getQueueName(), this.queue.size());
         }
 
-        this.fillInSuccessResult(result, Collections.singletonList(param));
-
-        return result;
+        return this.fillInSuccessResult(Collections.singletonList(param));
     }
 
     @Override
     public FcqProcessResult poll(FcqParam param) {
-        final FcqProcessResult result = new FcqProcessResult();
-
         //初始化读取的数据列表
-        final List<FcqParam> list = new ArrayList<>(param.getReadCount());
+        final List<FcqParam> list;
         //用来表示处理wait请求是否出错
         boolean waitFlag;
         synchronized (this.queue) {
             if (waitFlag = this.waitWhenEmpty()) {
-                int readCount = Math.min(param.getReadCount(), this.queue.size());
-                while (readCount-- > 0) {
-                    Optional.ofNullable(this.queue.poll()).ifPresent(list::add);
-                }
-                LOG.debug("Successful to a poll operation from queue '{0}, current size of queue is {1}, data size is {2}'",
+                FcqParam data = this.queue.poll();
+                list = Optional.ofNullable(data)
+                        .map(Collections::singletonList)
+                        .orElse(Collections.emptyList());
+                LOG.debug("Successful to a poll operation from queue '{0}', current size of queue is {1}, data size is {2}",
                         this.getQueueName(),this.queue.size(),list.size());
+            } else {
+                list = Collections.emptyList();
             }
         }
-        if (waitFlag) {
-            this.fillInSuccessResult(result, list);
-        }
 
-        return result;
+        return waitFlag ? this.fillInSuccessResult(list) : FcqProcessResult.error(FcqResultConstant.Message.ERROR);
     }
 
     @Override
     public FcqProcessResult getFromHead(FcqParam param) {
-        final FcqProcessResult result = new FcqProcessResult();
-
         //初始化读取的数据列表
         final List<FcqParam> list = new ArrayList<>(param.getReadCount());
         //用来表示处理wait时是否出错
@@ -92,40 +84,51 @@ public class CommonFcqQueueProcessor extends AbstractFcqQueueProcessor {
                 while (iterator.hasNext() && readCount-- > 0) {
                     Optional.ofNullable(iterator.next()).ifPresent(list::add);
                 }
-                LOG.debug("Successful to a getFromHead operation from queue '{0}, current size of queue is {1}, data size is {2}'",
+                LOG.debug("Successful to a getFromHead operation from queue '{0}', current size of queue is {1}, data size is {2}",
                         this.getQueueName(),this.queue.size(),list.size());
             }
         }
-        if (waitFlag) {
-            this.fillInSuccessResult(result, list);
-        }
 
-        return result;
+        return waitFlag ? this.fillInSuccessResult(list) : FcqProcessResult.error(FcqResultConstant.Message.ERROR);
     }
 
     @Override
     public FcqProcessResult getAllElements(FcqParam param) {
-        final FcqProcessResult result = new FcqProcessResult();
         List<FcqParam> list;
         synchronized (this.queue) {
             list = new ArrayList<>(this.queue);
+            LOG.debug("Successful to a getAllElements operation from queue '{0}', current size of queue is {1}, data size is {2}",
+                    this.getQueueName(), this.queue.size(), list.size());
         }
-        this.fillInSuccessResult(result, list);
-        return result;
+        return this.fillInSuccessResult(list);
     }
 
     @Override
     public FcqProcessResult pollAllElements(FcqParam param) {
-        final FcqProcessResult result = new FcqProcessResult();
         List<FcqParam> list;
         synchronized (this.queue) {
             list = new ArrayList<>(this.queue.size());
             while (!this.queue.isEmpty()) {
                 Optional.ofNullable(this.queue.poll()).ifPresent(list::add);
             }
+            LOG.debug("Successful to a pollAllElements operation from queue '{0}', current size of queue is {1}, data size is {2}",
+                    this.getQueueName(), this.queue.size(), list.size());
         }
-        this.fillInSuccessResult(result, list);
-        return super.pollAllElements(param);
+        return this.fillInSuccessResult(list);
+    }
+
+    @Override
+    public FcqProcessResult putToHead(FcqParam param) {
+        List<FcqParam> list;
+        synchronized (this.queue) {
+            if (this.queue.isEmpty()) {
+                this.queue.notifyAll();
+                LOG.debug("The queue '{0}' has notified all.",this.getQueueName());
+                this.queue.addFirst(param);
+            }
+            LOG.debug("putToHead successfully!Queue:'{0}', queueSize: {1}", this.getQueueName(), this.queue.size());
+        }
+        return this.fillInSuccessResult(Collections.singletonList(param));
     }
 
     /**
@@ -145,18 +148,5 @@ public class CommonFcqQueueProcessor extends AbstractFcqQueueProcessor {
             }
         }
         return result;
-    }
-
-    /**
-     * 填充一个成功的返回结果
-     * @param result 待填充对象
-     * @param list 数据集合
-     */
-    private void fillInSuccessResult(final FcqProcessResult result, final List<FcqParam> list) {
-        result.setCode(FcqResultConstant.Code.SUCCESS);
-        result.setMessage(list.isEmpty() ? FcqResultConstant.Message.NOT_FOUND : FcqResultConstant.Message.SUCCESS);
-        result.setValues(list);
-        result.setCount(list.size());
-        result.setTotalCount(list.size());
     }
 }

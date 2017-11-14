@@ -3,7 +3,6 @@ package merorin.cloud.cloudnote.fcq.io.param;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import merorin.cloud.cloudnote.fcq.util.FcqFuncPerformer;
-import merorin.cloud.cloudnote.validate.annotation.NotNull;
 
 import java.time.Instant;
 
@@ -24,7 +23,6 @@ public class FcqParam {
     /**
      * fcq队列的队列名
      */
-    @NotNull
     private String fcqQueueName;
 
     /**

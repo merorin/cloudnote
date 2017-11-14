@@ -33,37 +33,104 @@ public class FcqQueueProcessorContainer implements FcqQueueProcessable {
 
     @Override
     public FcqProcessResult offer(FcqParam param) {
-        return this.execFunc(param, processor -> processor.offer(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .notNull(FcqParam::getDataKey, "需要一个数据唯一标识")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.offer(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     @Override
     public FcqProcessResult poll(FcqParam param) {
-        return this.execFunc(param, processor -> processor.poll(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.poll(param));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     @Override
     public FcqProcessResult getFromHead(FcqParam param) {
-        return this.execFunc(param, processor -> processor.getFromHead(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .on(item -> item.getReadCount() < 1, "读取次数至少为1.")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.getFromHead(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     @Override
     public FcqProcessResult findValue(FcqParam param) {
-        return this.execFunc(param, processor -> processor.findValue(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .notNull(FcqParam::getDataKey, "需要一个数据唯一标识")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.findValue(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     @Override
     public FcqProcessResult removeValue(FcqParam param) {
-        return this.execFunc(param, processor -> processor.removeValue(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .notNull(FcqParam::getDataKey, "需要一个数据唯一标识")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.removeValue(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
+        
     }
 
     @Override
     public FcqProcessResult getAllElements(FcqParam param) {
-        return this.execFunc(param, processor -> processor.getAllElements(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.getAllElements(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     @Override
     public FcqProcessResult pollAllElements(FcqParam param) {
-        return this.execFunc(param, processor -> processor.pollAllElements(param));
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.pollAllElements(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
+    }
+
+    @Override
+    public FcqProcessResult putToHead(FcqParam param) {
+        return FuncValidator.of(param)
+                .notNull(FcqParam::getFcqTypeName, "必须指定队列类型")
+                .notNull(FcqParam::getFcqQueueName, "必须指定队列名")
+                .notNull(FcqParam::getDataKey, "需要一个数据唯一标识")
+                .success(item -> {
+                    return this.execFunc(item, processor -> processor.putToHead(item));
+                })
+                .error(this::ifValidateFailed)
+                .withValidation();
     }
 
     /**
@@ -73,16 +140,11 @@ public class FcqQueueProcessorContainer implements FcqQueueProcessable {
      * @return 执行结果
      */
     private FcqProcessResult execFunc(final FcqParam param, final Function<AbstractFcqQueueProcessor, FcqProcessResult> func) {
-        return FuncValidator.of(param)
-                .success(item -> {
-                    return Optional.of(item)
-                            .map(this::doGetProcessor)
-                            .filter(this::isErrorProcessor)
-                            .map(func)
-                            .orElse(this.buildErrorResult(item.getFcqQueueName(), item.getFcqTypeName()));
-                })
-                .error(this::ifValidateFailed)
-                .withValidation();
+        return Optional.of(param)
+                .map(this::doGetProcessor)
+                .filter(this::isErrorProcessor)
+                .map(func)
+                .orElse(this.buildErrorResult(param.getFcqQueueName(), param.getFcqTypeName()));
     }
 
     /**
@@ -113,8 +175,7 @@ public class FcqQueueProcessorContainer implements FcqQueueProcessable {
      */
     private FcqProcessResult buildErrorResult(final String queueName, final String typeName) {
         LOG.error("Fail to get processor with name, {}. The fcq type is {}.",queueName, typeName);
-
-        return new FcqProcessResult();
+        return FcqProcessResult.error(FcqResultConstant.Message.ERROR);
     }
 
     /**
@@ -123,6 +184,6 @@ public class FcqQueueProcessorContainer implements FcqQueueProcessable {
      * @return 验证失败返回的结果
      */
     private FcqProcessResult ifValidateFailed(FuncValidator validator) {
-        return new FcqProcessResult(FcqResultConstant.Code.ERROR, JSON.toJSONString(validator.getErrors()));
+        return FcqProcessResult.error(JSON.toJSONString(validator.getErrors()));
     }
 }

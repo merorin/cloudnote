@@ -50,14 +50,23 @@ public class FcqProcessResult {
      */
     private List<FcqParam> values;
 
-    public FcqProcessResult() {
-        this.code = FcqResultConstant.Code.ERROR;
-        this.message = FcqResultConstant.Message.ERROR;
-    }
-
-    public FcqProcessResult(int code, String message) {
+    /**
+     * 构造器
+     * @param code 错误码
+     * @param message 信息
+     */
+    private FcqProcessResult(int code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+
+    /**
+     * 构造一个默认的成功的返回实例
+     * @return 得到的返回实例
+     */
+    public static FcqProcessResult success() {
+        return FcqProcessResult.success(FcqResultConstant.Message.SUCCESS);
     }
 
     /**
@@ -68,6 +77,15 @@ public class FcqProcessResult {
     public static FcqProcessResult success(String message) {
         return new FcqProcessResult(FcqResultConstant.Code.SUCCESS, message);
     }
+
+    /**
+     * 构造一个默认的失败返回实例
+     * @return 得到的返回实例
+     */
+    public static FcqProcessResult error() {
+        return FcqProcessResult.error(FcqResultConstant.Message.ERROR);
+    }
+
 
     /**
      * 构造一个失败的返回实例

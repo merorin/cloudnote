@@ -4,6 +4,7 @@ import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
 import merorin.cloud.cloudnote.fcq.io.param.FcqParam;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,12 +28,7 @@ public abstract class AbstractFcqQueueProcessor implements FcqQueueProcessable {
      */
     @Override
     public FcqProcessResult offer(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
     }
 
     /**
@@ -42,22 +38,17 @@ public abstract class AbstractFcqQueueProcessor implements FcqQueueProcessable {
      */
     @Override
     public FcqProcessResult poll(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
     }
 
+    /**
+     * 从队列首开始获取n条数据
+     * @param param 封装的数据
+     * @return 处理成功或者失败
+     */
     @Override
     public FcqProcessResult getFromHead(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
     }
 
     /**
@@ -67,12 +58,7 @@ public abstract class AbstractFcqQueueProcessor implements FcqQueueProcessable {
      */
     @Override
     public FcqProcessResult findValue(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
     }
 
     /**
@@ -82,12 +68,7 @@ public abstract class AbstractFcqQueueProcessor implements FcqQueueProcessable {
      */
     @Override
     public FcqProcessResult removeValue(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
     }
 
     /**
@@ -97,12 +78,7 @@ public abstract class AbstractFcqQueueProcessor implements FcqQueueProcessable {
      */
     @Override
     public FcqProcessResult getAllElements(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
     }
 
     /**
@@ -112,11 +88,29 @@ public abstract class AbstractFcqQueueProcessor implements FcqQueueProcessable {
      */
     @Override
     public FcqProcessResult pollAllElements(FcqParam param) {
-        FcqProcessResult result = new FcqProcessResult();
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
+    }
 
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的队列处理者中中尚未实现.");
+    /**
+     * 将元素放到队列首位
+     * @param param 封装的数据
+     * @return 处理成功或者失败
+     */
+    @Override
+    public FcqProcessResult putToHead(FcqParam param) {
+        return FcqProcessResult.error("该方法在对应的队列处理者中中尚未实现.");
+    }
 
+    /**
+     * 填充一个成功的返回结果
+     * @param list 数据集合
+     */
+    protected FcqProcessResult fillInSuccessResult(final List<FcqParam> list) {
+        String message = list.isEmpty() ? FcqResultConstant.Message.NOT_FOUND : FcqResultConstant.Message.SUCCESS;
+        final FcqProcessResult result = FcqProcessResult.success(message);
+        result.setValues(list);
+        result.setCount(list.size());
+        result.setTotalCount(list.size());
         return result;
     }
 

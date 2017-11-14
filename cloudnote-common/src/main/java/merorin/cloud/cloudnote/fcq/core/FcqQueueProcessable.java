@@ -64,4 +64,11 @@ public interface FcqQueueProcessable {
      * @return 处理成功或者失败
      */
     FcqProcessResult pollAllElements(FcqParam param);
+
+    /**
+     * 将元素放到队列首位
+     * @param param 封装的数据
+     * @return 处理成功或者失败
+     */
+    FcqProcessResult putToHead(FcqParam param);
 }

@@ -52,7 +52,7 @@ public class UserDaoImpl implements UserDao {
                         result.setMessage(message);
                     } catch (Exception ex) {
                         result.setMessage(ResultConstant.Message.ERROR);
-                        result.setExceptionMsg(ex.getMessage());
+                        result.setExceptionMsg(ex.toString());
                     }
 
                     return result;
@@ -90,7 +90,7 @@ public class UserDaoImpl implements UserDao {
                         result.setMessage(message);
                     } catch (Exception ex) {
                         result.setMessage(ResultConstant.Message.ERROR);
-                        result.setExceptionMsg(ex.getMessage());
+                        result.setExceptionMsg(ex.toString());
                     }
 
                     return result;
@@ -117,7 +117,7 @@ public class UserDaoImpl implements UserDao {
                         result.setMessage(ResultConstant.Message.SUCCESS);
                     } catch (Exception ex) {
                         result.setMessage(ResultConstant.Message.ERROR);
-                        result.setExceptionMsg(ex.getMessage());
+                        result.setExceptionMsg(ex.toString());
                     }
 
                     return result;
@@ -152,7 +152,7 @@ public class UserDaoImpl implements UserDao {
                         result.setCount(1);
                         result.setTotalCount(1);
                     } catch (Exception ex) {
-                        result.setExceptionMsg(ex.getMessage());
+                        result.setExceptionMsg(ex.toString());
                     }
 
                     return result;
@@ -181,7 +181,7 @@ public class UserDaoImpl implements UserDao {
                             result.setMessage(ResultConstant.Message.SUCCESS);
                         }
                     } catch (Exception ex) {
-                        result.setExceptionMsg(ex.getMessage());
+                        result.setExceptionMsg(ex.toString());
                     }
 
                     return result;
@@ -233,7 +233,7 @@ public class UserDaoImpl implements UserDao {
                         result.setCount(1);
                         result.setTotalCount(1);
                     } catch (Exception ex) {
-                        result.setExceptionMsg(ex.getMessage());
+                        result.setExceptionMsg(ex.toString());
                     }
 
                     return result;

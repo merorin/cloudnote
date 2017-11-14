@@ -29,12 +29,7 @@ public class ErrorFcqDataExecutor extends AbstractFcqDataExecutor {
 
     @Override
     public FcqProcessResult read() {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在ErrorFcqDataExecutor中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在ErrorFcqDataExecutor中尚未实现.");
     }
 
     @Override

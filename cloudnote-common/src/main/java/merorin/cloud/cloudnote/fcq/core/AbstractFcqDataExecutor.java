@@ -54,12 +54,7 @@ public abstract class AbstractFcqDataExecutor implements FcqDataExecutable {
      */
     @Override
     public FcqProcessResult read() {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在对应的数据执行者中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在对应的数据执行者中尚未实现.");
     }
 
     /**

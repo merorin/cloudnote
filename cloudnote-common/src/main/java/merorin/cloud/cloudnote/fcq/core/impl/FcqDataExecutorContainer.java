@@ -3,7 +3,6 @@ package merorin.cloud.cloudnote.fcq.core.impl;
 import com.alibaba.fastjson.JSON;
 import merorin.cloud.cloudnote.fcq.core.AbstractFcqDataExecutor;
 import merorin.cloud.cloudnote.fcq.core.FcqDataExecutable;
-import merorin.cloud.cloudnote.fcq.io.common.FcqResultConstant;
 import merorin.cloud.cloudnote.fcq.io.result.FcqProcessResult;
 import merorin.cloud.cloudnote.fcq.util.FcqConfigContainer;
 import merorin.cloud.cloudnote.validate.core.FuncValidator;
@@ -32,12 +31,7 @@ public class FcqDataExecutorContainer implements FcqDataExecutable {
 
     @Override
     public FcqProcessResult read() {
-        FcqProcessResult result = new FcqProcessResult();
-
-        result.setCode(FcqResultConstant.Code.ERROR);
-        result.setMessage("该方法在FcqDataExecutorContainer中尚未实现.");
-
-        return result;
+        return FcqProcessResult.error("该方法在FcqDataExecutorContainer中尚未实现.");
     }
 
     /**
