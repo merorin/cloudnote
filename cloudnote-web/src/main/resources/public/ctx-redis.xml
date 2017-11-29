@@ -50,6 +50,8 @@
 
     <!-- Spring提供的访问Redis类. 用StringRedisTemplate,否则不能使用通配符-->
     <bean id="jedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <!--开启事务支持-->
+        <property name="enableTransactionSupport" value="true"/>
         <property name="connectionFactory" ref="jedisConnectionFactory" />
         <property name="keySerializer">
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />

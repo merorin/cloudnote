@@ -156,7 +156,7 @@ public class FuncValidator<T> {
     }
 
     /**
-     * 自定义校验方式,当满足条件时才机型校验
+     * 自定义校验方式,当满足条件时才进行校验
      * @param predicate 校验断言
      * @param errorMsg 错误信息
      * @param condition 校验的条件
